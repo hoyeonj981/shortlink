@@ -1,5 +1,6 @@
 plugins {
 	java
+	checkstyle
 	id("org.springframework.boot") version "3.4.1"
 	id("io.spring.dependency-management") version "1.1.7"
 	id("org.asciidoctor.jvm.convert") version "3.3.2"
@@ -12,6 +13,17 @@ java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(17)
 	}
+}
+
+checkstyle {
+	toolVersion = "10.21.1"
+
+	configFile = file("${rootDir}/.config/checkstyle/checkstyle.xml")
+
+	isIgnoreFailures = false
+
+	maxErrors = 0
+	maxWarnings= 0
 }
 
 configurations {
@@ -52,4 +64,13 @@ tasks.test {
 tasks.asciidoctor {
 	inputs.dir(project.extra["snippetsDir"]!!)
 	dependsOn(tasks.test)
+}
+
+tasks.withType<Checkstyle>().configureEach {
+	reports {
+		xml.required.set(true)
+		html.required.set(true)
+
+		html.outputLocation.set(layout.buildDirectory.file("reports/checkstyle/main.html"))
+	}
 }
