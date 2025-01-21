@@ -50,7 +50,11 @@ jobs:
           SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
           SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
           SONAR_HOST: ${{ secrets.SONAR_HOST }}
-        run: ./gradlew sonar --stacktrace
+        run: ./gradlew sonar \
+                -DSONAR_PROJECT_KEY=SONAR_PROJECT_KEY \
+                -DSONAR_ORGANIZATION=SONAR_ORGANIZATION \
+                -DSONAR_HOST=SONAR_HOST \
+                -DSONAR_LOGIN=SONAR_TOKEN
 
       # 빌드 결과물 저장
       - name: Upload Build Artifacts

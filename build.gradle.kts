@@ -37,6 +37,7 @@ sonar {
 		property("sonar.projectKey", System.getenv("SONAR_PROJECT_KEY") ?: "")
 		property("sonar.organization", System.getenv("SONAR_ORGANIZATION") ?: "")
 		property("sonar.host.url", System.getenv("SONAR_HOST") ?: "")
+		property("sonar.login", System.getenv("SONAR_LOGIN") ?: "")
 
 		property("sonar.coverage.jacoco.xmlReportPaths",
 				layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml"))
