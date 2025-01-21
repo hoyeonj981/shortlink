@@ -38,14 +38,6 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
-      # 테스트 결과 리포트
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()  # 테스트 실패해도 리포트는 게시
-        with:
-          files: |
-            build/test-results/**/*.xml
-
       # Checkstyle 검사
       - name: Run Checkstyle
         run: ./gradlew checkstyleMain checkstyleTest
