@@ -35,12 +35,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Build with Gradle
-        run: ./gradlew build
-
       # Checkstyle 검사
       - name: Run Checkstyle
         run: ./gradlew checkstyleMain checkstyleTest
+
+      # Build
+      - name: Build with Gradle
+        run: ./gradlew build
 
       # SonarCloud 분석
       - name: SonarCloud Scan
@@ -50,11 +51,7 @@ jobs:
           SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
           SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
           SONAR_HOST: ${{ secrets.SONAR_HOST }}
-        run: ./gradlew sonar \
-                -DSONAR_PROJECT_KEY=$SONAR_PROJECT_KEY \
-                -DSONAR_ORGANIZATION=$SONAR_ORGANIZATION \
-                -DSONAR_HOST=$SONAR_HOST \
-                -DSONAR_LOGIN=$SONAR_TOKEN
+        run: ./gradlew sonar
 
       # 빌드 결과물 저장
       - name: Upload Build Artifacts

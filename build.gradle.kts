@@ -5,7 +5,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.7"
 	id("org.asciidoctor.jvm.convert") version "3.3.2"
 	id("jacoco")
-	id("org.sonarqube") version "6.0.1.5171"
+	id("org.sonarqube") version "4.4.1.3373"
 }
 
 group = "me.hoyeon"
@@ -37,7 +37,7 @@ sonar {
 		property("sonar.projectKey", System.getenv("SONAR_PROJECT_KEY") ?: "")
 		property("sonar.organization", System.getenv("SONAR_ORGANIZATION") ?: "")
 		property("sonar.host.url", System.getenv("SONAR_HOST") ?: "")
-		property("sonar.login", System.getenv("SONAR_LOGIN") ?: "")
+		property("sonar.token", System.getenv("SONAR_TOKEN") ?: "")
 
 		property("sonar.coverage.jacoco.xmlReportPaths",
 				layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml"))
