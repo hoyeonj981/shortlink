@@ -36,7 +36,12 @@ sonar {
 	properties {
 		property("sonar.projectKey", System.getenv("SONAR_PROJECT_KEY") ?: "")
 		property("sonar.organization", System.getenv("SONAR_ORGANIZATION") ?: "")
-		property("sonar.hos.url", "https://sonarcloud.io")
+		property("sonar.host.url", System.getenv("SONAR_HOST") ?: "")
+
+		property("sonar.coverage.jacoco.xmlReportPaths",
+				layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml"))
+		property("sonar.java.checkstyle.reportPaths",
+				layout.buildDirectory.file("reports/checkstyle/main.xml"))
 	}
 }
 
@@ -85,8 +90,6 @@ tasks.withType<Checkstyle>().configureEach {
 	reports {
 		xml.required.set(true)
 		html.required.set(true)
-
-		html.outputLocation.set(layout.buildDirectory.file("reports/checkstyle/main.html"))
 	}
 }
 
@@ -94,23 +97,17 @@ tasks.jacocoTestReport {
 	reports {
 		xml.required.set(true)
 		html.required.set(true)
-		html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco"))
 	}
 
 	classDirectories.setFrom(
 			files(classDirectories.files.map {
 				fileTree(it) {
 					exclude(
-							// 제외할 파일 경로
+							"${project.projectDir}/src/main/java/me/hoyeon/shortlink/ShortlinkApplication.java"
 					)
 				}
 			})
 	)
-
-	sourceDirectories.setFrom(files(
-			"${project.projectDir}/src/main/java/me/hoyeon/shortlink/ShortlinkApplication.java"
-	))
-
 }
 
 tasks.jacocoTestCoverageVerification {
@@ -131,4 +128,8 @@ tasks.jacocoTestCoverageVerification {
 			}
 		}
 	}
+}
+
+tasks.sonar {
+	dependsOn(tasks.test, tasks.jacocoTestReport, tasks.checkstyleMain, tasks.checkstyleTest)
 }
