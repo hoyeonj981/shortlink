@@ -4,6 +4,7 @@ plugins {
 	id("org.springframework.boot") version "3.4.1"
 	id("io.spring.dependency-management") version "1.1.7"
 	id("org.asciidoctor.jvm.convert") version "3.3.2"
+	id("jacoco")
 }
 
 group = "me.hoyeon"
@@ -24,6 +25,10 @@ checkstyle {
 
 	maxErrors = 0
 	maxWarnings= 0
+}
+
+jacoco {
+	toolVersion = "0.8.12"
 }
 
 configurations {
@@ -55,6 +60,7 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+	finalizedBy(tasks.jacocoTestReport)
 }
 
 tasks.test {
@@ -72,5 +78,48 @@ tasks.withType<Checkstyle>().configureEach {
 		html.required.set(true)
 
 		html.outputLocation.set(layout.buildDirectory.file("reports/checkstyle/main.html"))
+	}
+}
+
+tasks.jacocoTestReport {
+	reports {
+		xml.required.set(true)
+		html.required.set(true)
+		html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco"))
+	}
+
+	classDirectories.setFrom(
+			files(classDirectories.files.map {
+				fileTree(it) {
+					exclude(
+							// 제외할 파일 경로
+					)
+				}
+			})
+	)
+
+	sourceDirectories.setFrom(files(
+			"${project.projectDir}/src/main/java/me/hoyeon/shortlink/ShortlinkApplication.java"
+	))
+
+}
+
+tasks.jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			// 전체 라인 커버리지
+			limit {
+				counter = "LINE"
+				value = "COVEREDRATIO"
+				minimum = "0.80".toBigDecimal()  // 최소 80%
+			}
+
+			// 분기 커버리지 검증
+			limit {
+				counter = "BRANCH"
+				value = "COVEREDRATIO"
+				minimum = "0.70".toBigDecimal()  // 최소 70%
+			}
+		}
 	}
 }
