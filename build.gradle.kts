@@ -130,7 +130,3 @@ tasks.jacocoTestCoverageVerification {
 		}
 	}
 }
-
-tasks.sonar {
-	dependsOn(tasks.test, tasks.jacocoTestReport, tasks.checkstyleMain, tasks.checkstyleTest)
-}
