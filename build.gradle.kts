@@ -5,6 +5,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.7"
 	id("org.asciidoctor.jvm.convert") version "3.3.2"
 	id("jacoco")
+	id("org.sonarqube") version "6.0.1.5171"
 }
 
 group = "me.hoyeon"
@@ -29,6 +30,14 @@ checkstyle {
 
 jacoco {
 	toolVersion = "0.8.12"
+}
+
+sonar {
+	properties {
+		property("sonar.projectKey", System.getenv("SONAR_PROJECT_KEY") ?: "")
+		property("sonar.organization", System.getenv("SONAR_ORGANIZATION") ?: "")
+		property("sonar.hos.url", "https://sonarcloud.io")
+	}
 }
 
 configurations {
