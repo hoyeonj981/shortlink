@@ -39,9 +39,9 @@ jobs:
       - name: Run Checkstyle
         run: ./gradlew checkstyleMain checkstyleTest
 
-      # Build and Run Jacoco
-      - name: Build and Run Jacoco
-        run: ./gradlew build -x checkstyleMain -x checkstyleTest
+#       Build and Run Jacoco
+#      - name: Build and Run Jacoco
+#        run: ./gradlew build -x checkstyleMain -x checkstyleTest
 
       # SonarCloud 분석
       - name: SonarCloud Scan
@@ -51,7 +51,9 @@ jobs:
           SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
           SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
           SONAR_HOST: ${{ secrets.SONAR_HOST }}
-        run: ./gradlew sonar --stacktrace --info
+        run: ./gradlew build sonar -x checkstyleMain -x checkstyleTest --info
+
+
 
       # 빌드 결과물 저장
       - name: Upload Build Artifacts
