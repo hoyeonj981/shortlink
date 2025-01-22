@@ -45,7 +45,7 @@ jobs:
           SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
           SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
           SONAR_HOST: ${{ secrets.SONAR_HOST }}
-        run: ./gradlew build -x checkstyleMain -x checkstyleTest sonarqube
+        run: ./gradlew build -x checkstyleMain -x checkstyleTest
 
       # SonarCloud 분석
       - name: SonarCloud Scan
@@ -54,7 +54,7 @@ jobs:
           SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
           SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
           SONAR_HOST: ${{ secrets.SONAR_HOST }}
-        run: ./gradlew sonar info
+        run: ./gradlew sonar --info
 
       # 빌드 결과물 저장
       - name: Upload Build Artifacts
