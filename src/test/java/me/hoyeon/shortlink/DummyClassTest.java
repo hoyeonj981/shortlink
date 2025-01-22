@@ -11,4 +11,10 @@ class DummyClassTest {
     var dummyClass = new DummyClass(1);
     Assertions.assertThat(dummyClass.addOne()).isEqualTo(1);
   }
+
+  @Test
+  void addiing_test2() {
+    var dummyClass = new DummyClass(1);
+    Assertions.assertThat(dummyClass.addOne()).isNotEqualTo(2);
+  }
 }
