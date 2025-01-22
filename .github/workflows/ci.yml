@@ -39,15 +39,22 @@ jobs:
       - name: Run Checkstyle
         run: ./gradlew checkstyleMain checkstyleTest
 
-      # 빌드 및 SonarCloud 분석
-      - name: SonarCloud Scan
+      - name: Build and jacoco, sonarqube
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
           SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
           SONAR_HOST: ${{ secrets.SONAR_HOST }}
-        run: ./gradlew build sonar -x checkstyleMain -x checkstyleTest --info
+        run: ./gradlew build -x checkstyleMain -x checkstyleTest sonarqube
+
+      # SonarCloud 분석
+      - name: SonarCloud Scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+          SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
+          SONAR_HOST: ${{ secrets.SONAR_HOST }}
+        run: ./gradlew sonar info
 
       # 빌드 결과물 저장
       - name: Upload Build Artifacts
