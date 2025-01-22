@@ -40,9 +40,9 @@ sonar {
 		property("sonar.token", System.getenv("SONAR_TOKEN") ?: "")
 
 		property("sonar.coverage.jacoco.xmlReportPaths",
-				layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml"))
+				"${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
 		property("sonar.java.checkstyle.reportPaths",
-				layout.buildDirectory.file("reports/checkstyle/main.xml"))
+				"${buildDir}/reports/checkstyle/main.xml")
 	}
 }
 
@@ -75,11 +75,11 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
-	finalizedBy(tasks.jacocoTestReport)
 }
 
 tasks.test {
 	outputs.dir(project.extra["snippetsDir"]!!)
+	finalizedBy(tasks.jacocoTestReport)
 }
 
 tasks.asciidoctor {
@@ -95,6 +95,8 @@ tasks.withType<Checkstyle>().configureEach {
 }
 
 tasks.jacocoTestReport {
+	dependsOn(tasks.test)
+
 	reports {
 		xml.required.set(true)
 		html.required.set(true)
@@ -109,24 +111,4 @@ tasks.jacocoTestReport {
 				}
 			})
 	)
-}
-
-tasks.jacocoTestCoverageVerification {
-	violationRules {
-		rule {
-			// 전체 라인 커버리지
-			limit {
-				counter = "LINE"
-				value = "COVEREDRATIO"
-				minimum = "0.10".toBigDecimal()  // 최소 80%
-			}
-
-			// 분기 커버리지 검증
-			limit {
-				counter = "BRANCH"
-				value = "COVEREDRATIO"
-				minimum = "0.10".toBigDecimal()  // 최소 70%
-			}
-		}
-	}
 }

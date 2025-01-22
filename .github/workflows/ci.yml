@@ -39,7 +39,8 @@ jobs:
       - name: Run Checkstyle
         run: ./gradlew checkstyleMain checkstyleTest
 
-      - name: Build and jacoco, sonarqube
+      # 빌드 및 jacoco 보고서 생성
+      - name: Build and jacoco
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
