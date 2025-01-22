@@ -1,6 +1,8 @@
 ---
-name : Issue Template
-about : 이슈 생성을 위한 템플릿입니다.
+
+name : Pull Request Template
+about : Pull Request를 생성을 위한 템플릿입니다.
+
 ---
 
 ## 설명
