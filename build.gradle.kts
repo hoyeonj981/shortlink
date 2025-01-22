@@ -104,7 +104,7 @@ tasks.jacocoTestReport {
 			files(classDirectories.files.map {
 				fileTree(it) {
 					exclude(
-							"${project.projectDir}/src/main/java/me/hoyeon/shortlink/ShortlinkApplication.java"
+							"**/me/hoyeon/shortlink/*Application.class"
 					)
 				}
 			})
