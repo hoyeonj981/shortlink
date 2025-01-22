@@ -35,20 +35,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Build with Gradle
-        run: ./gradlew build
-
-      # 테스트 결과 리포트
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()  # 테스트 실패해도 리포트는 게시
-        with:
-          files: |
-            build/test-results/**/*.xml
-
       # Checkstyle 검사
       - name: Run Checkstyle
         run: ./gradlew checkstyleMain checkstyleTest
+
+      # 빌드 및 Jacoco 보고서 생성
+      - name: Build and Run Jacoco
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+          SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
+          SONAR_HOST: ${{ secrets.SONAR_HOST }}
+        run: ./gradlew build -x checkstyleMain -x checkstyleTest
 
       # SonarCloud 분석
       - name: SonarCloud Scan
@@ -58,11 +56,11 @@ jobs:
           SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
           SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
           SONAR_HOST: ${{ secrets.SONAR_HOST }}
-        run: ./gradlew sonar
+        run: ./gradlew sonar --info
 
       # 빌드 결과물 저장
       - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Package
           path: build/libs

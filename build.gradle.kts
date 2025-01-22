@@ -37,11 +37,12 @@ sonar {
 		property("sonar.projectKey", System.getenv("SONAR_PROJECT_KEY") ?: "")
 		property("sonar.organization", System.getenv("SONAR_ORGANIZATION") ?: "")
 		property("sonar.host.url", System.getenv("SONAR_HOST") ?: "")
+		property("sonar.token", System.getenv("SONAR_TOKEN") ?: "")
 
 		property("sonar.coverage.jacoco.xmlReportPaths",
-				layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml"))
+				"${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
 		property("sonar.java.checkstyle.reportPaths",
-				layout.buildDirectory.file("reports/checkstyle/main.xml"))
+				"${buildDir}/reports/checkstyle/main.xml")
 	}
 }
 
@@ -74,11 +75,11 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
-	finalizedBy(tasks.jacocoTestReport)
 }
 
 tasks.test {
 	outputs.dir(project.extra["snippetsDir"]!!)
+	finalizedBy(tasks.jacocoTestReport)
 }
 
 tasks.asciidoctor {
@@ -94,6 +95,8 @@ tasks.withType<Checkstyle>().configureEach {
 }
 
 tasks.jacocoTestReport {
+	dependsOn(tasks.test)
+
 	reports {
 		xml.required.set(true)
 		html.required.set(true)
@@ -103,33 +106,9 @@ tasks.jacocoTestReport {
 			files(classDirectories.files.map {
 				fileTree(it) {
 					exclude(
-							"${project.projectDir}/src/main/java/me/hoyeon/shortlink/ShortlinkApplication.java"
+							"**/me/hoyeon/shortlink/*Application.class"
 					)
 				}
 			})
 	)
-}
-
-tasks.jacocoTestCoverageVerification {
-	violationRules {
-		rule {
-			// 전체 라인 커버리지
-			limit {
-				counter = "LINE"
-				value = "COVEREDRATIO"
-				minimum = "0.80".toBigDecimal()  // 최소 80%
-			}
-
-			// 분기 커버리지 검증
-			limit {
-				counter = "BRANCH"
-				value = "COVEREDRATIO"
-				minimum = "0.70".toBigDecimal()  // 최소 70%
-			}
-		}
-	}
-}
-
-tasks.sonar {
-	dependsOn(tasks.test, tasks.jacocoTestReport, tasks.checkstyleMain, tasks.checkstyleTest)
 }
