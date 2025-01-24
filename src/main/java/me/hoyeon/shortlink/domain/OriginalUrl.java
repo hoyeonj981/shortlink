@@ -1,33 +1,49 @@
 package me.hoyeon.shortlink.domain;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Objects;
 
-public record OriginalUrl(
-    String value
-) {
+public class OriginalUrl {
 
-  public OriginalUrl {
-    validateUrl(value);
-  }
+  private final URI uri;
 
-  private void validateUrl(String value) {
-    if (Objects.isNull(value) || value.isBlank()) {
-      throw new InvalidUrlException(value);
-    }
-
+  public OriginalUrl(String value) {
     try {
-      var url = new URL(value);
-      validateHost(url);
-    } catch (MalformedURLException e) {
+      validateNullOrBlank(value);
+      uri = new URI(value);
+      validateRelativeReference(uri);
+    } catch (URISyntaxException e) {
       throw new InvalidUrlException(value, e);
     }
   }
 
-  private void validateHost(URL url) {
-    if (url.getHost().isBlank()) {
-      throw new InvalidUrlException(url.toString());
+  private void validateRelativeReference(URI uri) {
+    if (Objects.isNull(uri.getScheme()) || Objects.isNull(uri.getHost())) {
+      throw new InvalidUrlException(uri.toString());
     }
+  }
+
+  private void validateNullOrBlank(String value) {
+    if (Objects.isNull(value) || value.isBlank()) {
+      throw new InvalidUrlException(value);
+    }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    OriginalUrl that = (OriginalUrl) o;
+    return Objects.equals(uri, that.uri);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(uri);
   }
 }
