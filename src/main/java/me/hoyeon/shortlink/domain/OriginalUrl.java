@@ -14,8 +14,8 @@ public class OriginalUrl {
     try {
       validateNullOrBlank(value);
       uri = new URI(value);
-      validateAllowedScheme(value);
       validateRelativeReference(uri);
+      validateAllowedScheme(value);
     } catch (URISyntaxException e) {
       throw new InvalidUrlException(value, e);
     }
@@ -28,7 +28,7 @@ public class OriginalUrl {
   }
 
   private void validateRelativeReference(URI uri) {
-    if (Objects.isNull(uri.getScheme()) || Objects.isNull(uri.getHost())) {
+    if (Objects.isNull(uri.getScheme()) || Objects.isNull(uri.getSchemeSpecificPart())) {
       throw new InvalidUrlException(uri.toString());
     }
   }
