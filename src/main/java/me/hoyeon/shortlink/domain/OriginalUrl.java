@@ -6,15 +6,24 @@ import java.util.Objects;
 
 public class OriginalUrl {
 
+  private static final String HTTPS_SCHEME_REGEX = "^https?$";
+
   private final URI uri;
 
   public OriginalUrl(String value) {
     try {
       validateNullOrBlank(value);
       uri = new URI(value);
+      validateAllowedScheme(value);
       validateRelativeReference(uri);
     } catch (URISyntaxException e) {
       throw new InvalidUrlException(value, e);
+    }
+  }
+
+  private void validateAllowedScheme(String value) {
+    if (!uri.getScheme().toLowerCase().matches(HTTPS_SCHEME_REGEX)) {
+      throw new NotAllowedSchemeException(value);
     }
   }
 

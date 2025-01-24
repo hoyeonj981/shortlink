@@ -33,6 +33,25 @@ class OriginalUrlTest {
         .isInstanceOf(InvalidUrlException.class);
   }
 
+  @DisplayName("http, https 스키마가 아니라면 예외가 발생한다")
+  @ParameterizedTest
+  @ValueSource(strings = {
+      "file:///C:/document.txt",
+      "mailto:user@example.com",
+      "tel:+1234567890",
+      "sms:+1234567890",
+      "ftp://ftp.example.com/file.txt",
+      "sftp://example.com/file",
+      "ssh://user@host.example.com",
+      "data:text/plain,Hello",
+      "javascript:alert('hello')",
+      "about:blank"
+  })
+  void throwExceptionIfSchemeIsNotHttpOrHttps(String givenUrl) {
+    assertThatThrownBy(() -> new OriginalUrl(givenUrl))
+        .isInstanceOf(NotAllowedSchemeException.class);
+  }
+
   @DisplayName("동일한 URL 값을 가진 OriginalUrl은 서로 같다")
   @Test
   void originalUrlsWithSameValueAreSame() {
