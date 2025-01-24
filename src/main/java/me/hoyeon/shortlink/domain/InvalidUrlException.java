@@ -1,7 +1,5 @@
 package me.hoyeon.shortlink.domain;
 
-import java.net.MalformedURLException;
-
 public class InvalidUrlException extends RuntimeException {
 
   private static final String MESSAGE = "유효하지 않는 URL입니다.";
@@ -10,7 +8,7 @@ public class InvalidUrlException extends RuntimeException {
     super(MESSAGE + " - " + value);
   }
 
-  public InvalidUrlException(String value, MalformedURLException e) {
+  public InvalidUrlException(String value, Throwable e) {
     super(MESSAGE + " - " + value, e);
   }
 }
