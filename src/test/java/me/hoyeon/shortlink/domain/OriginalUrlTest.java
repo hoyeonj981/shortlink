@@ -15,9 +15,6 @@ class OriginalUrlTest {
   @ParameterizedTest
   @NullAndEmptySource
   @ValueSource(strings = {
-      "invalid-url",
-      "hello world",
-      "http",
       "http:/",
       "https://",
       "ftp:",
@@ -25,6 +22,20 @@ class OriginalUrlTest {
       "abcd://"
   })
   void throwExceptionIfUrlFormatIsNotValid(String givenUrl) {
+    assertThatThrownBy(() -> new OriginalUrl(givenUrl))
+        .isInstanceOf(InvalidUrlException.class);
+  }
+
+  @DisplayName("상대 참조는 유효한 형식이 아니다")
+  @ParameterizedTest
+  @ValueSource(strings = {
+      "/hello",
+      "/hello world/",
+      "../hello/world",
+      "/hello//world",
+      "./hello/world"
+  })
+  void relativeReferenceShouldNotBeAllowed(String givenUrl) {
     assertThatThrownBy(() -> new OriginalUrl(givenUrl))
         .isInstanceOf(InvalidUrlException.class);
   }
