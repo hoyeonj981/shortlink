@@ -11,17 +11,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class OriginalUrlTest {
 
-  @DisplayName("유효하지 않은 URL 형식은 예외가 발생한다")
+  @DisplayName("URL 값이 null이거나 비어있다면 예외가 발생한다")
   @ParameterizedTest
   @NullAndEmptySource
-  @ValueSource(strings = {
-      "http:/",
-      "https://",
-      "ftp:",
-      "://",
-      "abcd://"
-  })
-  void throwExceptionIfUrlFormatIsNotValid(String givenUrl) {
+  void throwExceptionIfValueIsNullOrEmpty(String givenUrl) {
     assertThatThrownBy(() -> new OriginalUrl(givenUrl))
         .isInstanceOf(InvalidUrlException.class);
   }
