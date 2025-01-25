@@ -56,7 +56,7 @@ class SimpleAliasGeneratorTest {
 
   @DisplayName("생성된 Alias 값은 영어 대문자와 소문자, 숫자만 포함한다")
   @Test
-  void AliasValuesContainOnlyEnglishUppercaseAndLowercaseLettersAndDigit() {
+  void shouldContainOnlyUppercaseLowercaseAndDigitsInGeneratedAlias() {
     var givenBase = "https://example.com";
 
     var shortened = generator.shorten(givenBase);
