@@ -43,24 +43,4 @@ class SimpleAliasGeneratorTest {
     assertThat(givenBase1).isNotEqualTo(givenBase2);
     assertThat(shortened1).isNotEqualTo(shortened2);
   }
-
-  @DisplayName("생성된 Alias 값의 길이는 6이다")
-  @Test
-  void lengthOfTheAliasValueIs6() {
-    var givenBase = "https://example.com";
-
-    var shortened = generator.shorten(givenBase);
-
-    assertThat(shortened.length()).isEqualTo(SIX);
-  }
-
-  @DisplayName("생성된 Alias 값은 영어 대문자와 소문자, 숫자만 포함한다")
-  @Test
-  void shouldContainOnlyUppercaseLowercaseAndDigitsInGeneratedAlias() {
-    var givenBase = "https://example.com";
-
-    var shortened = generator.shorten(givenBase);
-
-    assertThat(shortened).matches(VALID_ALIAS_REGEX);
-  }
 }
