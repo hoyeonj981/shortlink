@@ -11,13 +11,14 @@ public class SimpleAliasGenerator implements AliasGenerator {
       + "abcdefghijklmnopqrstuvwxyz";
 
   @Override
-  public String shorten(String base) {
+  public Alias shorten(String base) {
     var hashed = Objects.hashCode(base);
     return convertHashToAlias(hashed);
   }
 
-  private String convertHashToAlias(int hashed) {
-    return encodeBase62(hashed);
+  private Alias convertHashToAlias(int hashed) {
+    var encodedValue = encodeBase62(hashed);
+    return new Alias(encodedValue);
   }
 
   private String encodeBase62(int value) {
