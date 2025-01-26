@@ -8,9 +8,6 @@ import org.junit.jupiter.api.Test;
 
 class SimpleAliasGeneratorTest {
 
-  private static final int SIX = 6;
-  private static final String VALID_ALIAS_REGEX = "^[a-zA-Z0-9]+$";
-
   private AliasGenerator generator;
 
   @BeforeEach
