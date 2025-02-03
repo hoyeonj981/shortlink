@@ -99,4 +99,38 @@ class ExpirationTimeTest {
 
     assertThat(expirationTime.isExpired()).isFalse();
   }
+
+  @DisplayName("만료시간이 동일하다면 동일한 객체이다")
+  @Test
+  void sameObjectIfExpirationTimeIsSame() {
+    var currentTime1 = Instant.parse("2024-01-01T10:00:00Z");
+    var currentTime2 = Instant.parse("2024-01-01T10:00:00Z");
+    var fixedClock = Clock.fixed(
+        currentTime1,
+        ZoneId.systemDefault()
+    );
+
+    var expirationTime1 = ExpirationTime.from(currentTime1, fixedClock);
+    var expirationTime2 = ExpirationTime.from(currentTime2, fixedClock);
+
+    assertThat(currentTime1).isEqualTo(currentTime2);
+    assertThat(expirationTime1).isEqualTo(expirationTime2);
+  }
+
+  @DisplayName("만료시간이 다르다면 다른 객체이다")
+  @Test
+  void differentObjectIfExpirationTimeIsNotSame() {
+    var currentTime1 = Instant.parse("2024-01-01T10:00:00Z");
+    var currentTime2 = currentTime1.plusSeconds(1);
+    var fixedClock = Clock.fixed(
+        currentTime1,
+        ZoneId.systemDefault()
+    );
+
+    var expirationTime1 = ExpirationTime.from(currentTime1, fixedClock);
+    var expirationTime2 = ExpirationTime.from(currentTime2, fixedClock);
+
+    assertThat(currentTime1).isNotEqualTo(currentTime2);
+    assertThat(expirationTime1).isNotEqualTo(expirationTime2);
+  }
 }
