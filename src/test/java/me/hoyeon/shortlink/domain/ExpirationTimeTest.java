@@ -38,7 +38,7 @@ class ExpirationTimeTest {
         ZoneId.systemDefault()
     );
 
-    assertThatCode(() ->ExpirationTime.from(plusOneSec, fixedClock))
+    assertThatCode(() -> ExpirationTime.from(plusOneSec, fixedClock))
         .doesNotThrowAnyException();
   }
 
