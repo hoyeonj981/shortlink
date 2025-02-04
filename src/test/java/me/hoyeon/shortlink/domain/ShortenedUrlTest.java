@@ -102,4 +102,42 @@ class ShortenedUrlTest {
 
     assertThat(shortenedUrl.isAccessible(pastTime)).isTrue();
   }
+
+  @DisplayName("id 값이 같다면 동일한 객체이다")
+  @Test
+  void sameObjectIfIdValueIsSame() {
+    var givenId1 = 1L;
+    var givenId2 = 1L;
+    var givenOriginalUrl = "https://example.com";
+    var givenDays = 1;
+    var givenAlias = new Alias("abcdef");
+    when(generator.shorten(anyString())).thenReturn(givenAlias);
+
+    var shortenedUrl1 = ShortenedUrl.create(
+        givenId1, givenOriginalUrl, generator, givenDays, STANDARD_CLOCK);
+    var shortenedUrl2 = ShortenedUrl.create(
+        givenId2, givenOriginalUrl, generator, givenDays, STANDARD_CLOCK);
+
+    assertThat(givenId1).isEqualTo(givenId2);
+    assertThat(shortenedUrl1).isEqualTo(shortenedUrl2);
+  }
+
+  @DisplayName("id 값이 다르다면 다른 객체이다")
+  @Test
+  void differentObjectIfIdValueIsDifferent() {
+    var givenId1 = 1L;
+    var givenId2 = 2L;
+    var givenOriginalUrl = "https://example.com";
+    var givenDays = 1;
+    var givenAlias = new Alias("abcdef");
+    when(generator.shorten(anyString())).thenReturn(givenAlias);
+
+    var shortenedUrl1 = ShortenedUrl.create(
+        givenId1, givenOriginalUrl, generator, givenDays, STANDARD_CLOCK);
+    var shortenedUrl2 = ShortenedUrl.create(
+        givenId2, givenOriginalUrl, generator, givenDays, STANDARD_CLOCK);
+
+    assertThat(givenId1).isNotEqualTo(givenId2);
+    assertThat(shortenedUrl1).isNotEqualTo(shortenedUrl2);
+  }
 }

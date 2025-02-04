@@ -52,4 +52,21 @@ public class ShortenedUrl {
   public boolean isAccessible(Clock clock) {
     return !this.expirationTime.isExpired(clock);
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ShortenedUrl that = (ShortenedUrl) o;
+    return Objects.equals(urlId, that.urlId);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(urlId);
+  }
 }
