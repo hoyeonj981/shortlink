@@ -25,6 +25,22 @@ class ShortenedUrlTest {
   @Mock
   private AliasGenerator generator;
 
+  @DisplayName("원본 url가 주어지면 단축 url을 생성한다")
+  @Test
+  void createShortenedUrlFromOriginalUrl() {
+    var givenId = 1L;
+    var givenOriginalUrl = "https://example.com";
+    var givenDays = 1;
+    var givenAlias = new Alias("abcdef");
+    when(generator.shorten(anyString())).thenReturn(givenAlias);
+
+    var shortenedUrl = ShortenedUrl.create(
+        givenId, givenOriginalUrl, generator, givenDays, STANDARD_CLOCK);
+
+    assertThat(shortenedUrl.getOriginalUrlToString()).isEqualTo(givenOriginalUrl);
+    assertThat(shortenedUrl.getAliasToString()).isEqualTo(givenAlias.getValue());
+  }
+
   @DisplayName("단축 url에 접근할 수 있다면 만료일을 수정할 수 있다")
   @Test
   void shouldUpdateExpirationTimeIfShortenedUrlIsAccessible() {
