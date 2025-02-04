@@ -53,6 +53,14 @@ public class ShortenedUrl {
     return !this.expirationTime.isExpired(clock);
   }
 
+  public String getAliasToString() {
+    return this.alias.getValue();
+  }
+
+  public String getOriginalUrlToString() {
+    return this.originalUrl.getValue();
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {

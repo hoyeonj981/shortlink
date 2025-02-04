@@ -39,6 +39,10 @@ public class OriginalUrl {
     }
   }
 
+  public String getValue() {
+    return this.uri.toString();
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
