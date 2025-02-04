@@ -12,9 +12,8 @@ public class ExpirationTime {
   private static final Duration MAX_DURATION = Duration.ofDays(EXPIRATION_DAYS);
 
   private final Instant expirationTime;
-  private final Clock clock;
 
-  public static ExpirationTime of(int days, Clock clock) {
+  public static ExpirationTime fromNowTo(int days, Clock clock) {
     validateDays(days);
     var now = Instant.now(clock);
     var expirationTime = now.plus(days, ChronoUnit.DAYS);
@@ -32,17 +31,16 @@ public class ExpirationTime {
   }
 
   private ExpirationTime(Instant expirationTime, Clock clock) {
-    this.clock = clock;
-    validateExpirationTime(expirationTime);
+    validateExpirationTime(expirationTime, clock);
     this.expirationTime = expirationTime;
   }
 
-  private void validateExpirationTime(Instant expirationTime) {
-    validateIsBeforeTheCurrent(expirationTime);
-    validateMaxDuration(expirationTime);
+  private void validateExpirationTime(Instant expirationTime, Clock clock) {
+    validateIsBeforeTheCurrent(expirationTime, clock);
+    validateMaxDuration(expirationTime, clock);
   }
 
-  private void validateMaxDuration(Instant expirationTime) {
+  private void validateMaxDuration(Instant expirationTime, Clock clock) {
     var now = Instant.now(clock);
     var between = Duration.between(now, expirationTime);
     if (between.compareTo(MAX_DURATION) > 0) {
@@ -50,14 +48,14 @@ public class ExpirationTime {
     }
   }
 
-  private void validateIsBeforeTheCurrent(Instant expirationTime) {
+  private void validateIsBeforeTheCurrent(Instant expirationTime, Clock clock) {
     var now = Instant.now(clock);
     if (expirationTime.isBefore(now)) {
       throw new InvalidExpirationTimeException();
     }
   }
 
-  public boolean isExpired() {
+  public boolean isExpired(Clock clock) {
     return !Instant.now(clock).isBefore(this.expirationTime);
   }
 
