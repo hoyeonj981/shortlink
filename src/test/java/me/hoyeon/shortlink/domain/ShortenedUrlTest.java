@@ -63,7 +63,7 @@ class ShortenedUrlTest {
 
   @DisplayName("단축 url에 접근이 가능하지 않다면 만료일을 수정할 때 예외가 발생한다")
   @Test
-  void shouldNotUpdateExpirationTImeIfShortendedUrlIsNotAccessible() {
+  void shouldNotUpdateExpirationTimeIfShortenedUrlIsNotAccessible() {
     var givenId = 1L;
     var givenOriginalUrl = "https://example.com";
     var givenDays = 1;
@@ -102,7 +102,7 @@ class ShortenedUrlTest {
 
   @DisplayName("만료시간이 남았다면 단축 url에 접근할 수 있다")
   @Test
-  void shouldBeAccessibleIfTImeIsNotExpired() {
+  void shouldBeAccessibleIfTimeIsNotExpired() {
     var givenId = 1L;
     var givenOriginalUrl = "https://example.com";
     var givenDays = 1;
