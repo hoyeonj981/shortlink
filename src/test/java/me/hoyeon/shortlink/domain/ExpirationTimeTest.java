@@ -82,7 +82,7 @@ class ExpirationTimeTest {
 
     var expirationTime = ExpirationTime.from(pastTime, fixedClock);
 
-    assertThat(expirationTime.isExpired()).isTrue();
+    assertThat(expirationTime.isExpired(fixedClock)).isTrue();
   }
 
   @DisplayName("만료시간이 현재 시간보다 이후라면 false를 반환한다")
@@ -97,7 +97,7 @@ class ExpirationTimeTest {
 
     var expirationTime = ExpirationTime.from(currentTime, fixedClock);
 
-    assertThat(expirationTime.isExpired()).isFalse();
+    assertThat(expirationTime.isExpired(fixedClock)).isFalse();
   }
 
   @DisplayName("만료시간이 동일하다면 동일한 객체이다")
