@@ -24,7 +24,7 @@ class ExpirationTimeTest {
         ZoneId.systemDefault()
     );
 
-    assertThatCode(() -> ExpirationTime.of(1, fixedClock))
+    assertThatCode(() -> ExpirationTime.fromNowTo(1, fixedClock))
         .doesNotThrowAnyException();
   }
 
@@ -45,7 +45,7 @@ class ExpirationTimeTest {
   @DisplayName("만료기간이 90일을 넘을 경우 예외가 발생한다")
   @Test
   void throwExceptionIfExpirationDaysIsOver90() {
-    assertThatThrownBy(() -> ExpirationTime.of(91, Clock.systemDefaultZone()))
+    assertThatThrownBy(() -> ExpirationTime.fromNowTo(91, Clock.systemDefaultZone()))
         .isInstanceOf(InvalidExpirationTimeException.class);
   }
 
@@ -67,7 +67,7 @@ class ExpirationTimeTest {
   @ParameterizedTest
   @ValueSource(ints = {-1, 0})
   void throwExceptionIfExpirationDaysIsNegativeOrZero(int givenDays) {
-    assertThatThrownBy(() -> ExpirationTime.of(givenDays, Clock.systemDefaultZone()))
+    assertThatThrownBy(() -> ExpirationTime.fromNowTo(givenDays, Clock.systemDefaultZone()))
         .isInstanceOf(InvalidExpirationTimeException.class);
   }
 

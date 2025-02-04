@@ -14,7 +14,7 @@ public class ExpirationTime {
   private final Instant expirationTime;
   private final Clock clock;
 
-  public static ExpirationTime of(int days, Clock clock) {
+  public static ExpirationTime fromNowTo(int days, Clock clock) {
     validateDays(days);
     var now = Instant.now(clock);
     var expirationTime = now.plus(days, ChronoUnit.DAYS);
