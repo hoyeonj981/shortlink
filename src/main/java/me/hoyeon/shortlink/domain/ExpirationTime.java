@@ -11,7 +11,8 @@ public class ExpirationTime {
   private static final int EXPIRATION_DAYS = 90;
   private static final Duration MAX_DURATION = Duration.ofDays(EXPIRATION_DAYS);
 
-  private final Instant expirationTime;
+  private final Instant expiration;
+  private final Clock clock;
 
   public static ExpirationTime fromNowTo(int days, Clock clock) {
     validateDays(days);
@@ -30,9 +31,10 @@ public class ExpirationTime {
     }
   }
 
-  private ExpirationTime(Instant expirationTime, Clock clock) {
-    validateExpirationTime(expirationTime, clock);
-    this.expirationTime = expirationTime;
+  private ExpirationTime(Instant expiration, Clock clock) {
+    validateExpirationTime(expiration, clock);
+    this.expiration = expiration;
+    this.clock = clock;
   }
 
   private void validateExpirationTime(Instant expirationTime, Clock clock) {
@@ -55,8 +57,8 @@ public class ExpirationTime {
     }
   }
 
-  public boolean isExpired(Clock clock) {
-    return !Instant.now(clock).isBefore(this.expirationTime);
+  public boolean isExpired() {
+    return Instant.now(this.clock).isAfter(this.expiration);
   }
 
   @Override
@@ -68,11 +70,11 @@ public class ExpirationTime {
       return false;
     }
     ExpirationTime that = (ExpirationTime) o;
-    return Objects.equals(expirationTime, that.expirationTime);
+    return Objects.equals(expiration, that.expiration);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(expirationTime);
+    return Objects.hash(expiration);
   }
 }
