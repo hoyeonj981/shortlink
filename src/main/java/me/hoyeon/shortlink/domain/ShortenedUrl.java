@@ -43,14 +43,14 @@ public class ShortenedUrl {
   }
 
   public void updateExpirationDays(int days, Clock clock) {
-    if (!this.isAccessible(clock)) {
+    if (!this.isAccessible()) {
       throw new InvalidUrlStateException();
     }
     this.expirationTime = ExpirationTime.fromNowTo(days, clock);
   }
 
-  public boolean isAccessible(Clock clock) {
-    return !this.expirationTime.isExpired(clock);
+  public boolean isAccessible() {
+    return !this.expirationTime.isExpired();
   }
 
   public String getAliasToString() {
