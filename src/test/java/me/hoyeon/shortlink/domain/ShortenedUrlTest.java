@@ -68,16 +68,18 @@ class ShortenedUrlTest {
     var givenOriginalUrl = "https://example.com";
     var givenDays = 1;
     var givenAlias = new Alias("abcdef");
-    var futureTime = Clock.fixed(
+    var futureClock = Clock.fixed(
         STANDARD_TIME.plus(1, ChronoUnit.DAYS),
         systemDefault()
     );
+    var mutableClock = new MutableClock(STANDARD_TIME);
     when(generator.shorten(anyString())).thenReturn(givenAlias);
 
     var shortenedUrl = ShortenedUrl.create(
-        givenId, givenOriginalUrl, generator, givenDays, STANDARD_CLOCK);
+        givenId, givenOriginalUrl, generator, givenDays, mutableClock);
+    mutableClock.setInstant(STANDARD_TIME.plus(givenDays + 1, ChronoUnit.DAYS));
 
-    assertThatThrownBy(() -> shortenedUrl.updateExpirationDays(givenDays + 1, futureTime))
+    assertThatThrownBy(() -> shortenedUrl.updateExpirationDays(givenDays + 1, futureClock))
         .isInstanceOf(InvalidUrlStateException.class);
   }
 
@@ -88,16 +90,14 @@ class ShortenedUrlTest {
     var givenOriginalUrl = "https://example.com";
     var givenDays = 1;
     var givenAlias = new Alias("abcdef");
-    var futureTime = Clock.fixed(
-        STANDARD_TIME.plus(1, ChronoUnit.DAYS),
-        systemDefault()
-    );
+    var mutableClock = new MutableClock(STANDARD_TIME);
     when(generator.shorten(anyString())).thenReturn(givenAlias);
 
     var shortenedUrl = ShortenedUrl.create(
-        givenId, givenOriginalUrl, generator, givenDays, STANDARD_CLOCK);
+        givenId, givenOriginalUrl, generator, givenDays, mutableClock);
+    mutableClock.setInstant(STANDARD_TIME.plus(givenDays + 1, ChronoUnit.DAYS));
 
-    assertThat(shortenedUrl.isAccessible(futureTime)).isFalse();
+    assertThat(shortenedUrl.isAccessible()).isFalse();
   }
 
   @DisplayName("만료시간이 남았다면 단축 url에 접근할 수 있다")
@@ -116,7 +116,7 @@ class ShortenedUrlTest {
     var shortenedUrl = ShortenedUrl.create(
         givenId, givenOriginalUrl, generator, givenDays, STANDARD_CLOCK);
 
-    assertThat(shortenedUrl.isAccessible(pastTime)).isTrue();
+    assertThat(shortenedUrl.isAccessible()).isTrue();
   }
 
   @DisplayName("id 값이 같다면 동일한 객체이다")
