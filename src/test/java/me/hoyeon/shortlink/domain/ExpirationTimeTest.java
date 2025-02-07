@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -75,14 +76,14 @@ class ExpirationTimeTest {
   @Test
   void returnTrueIfExpirationTimeIsBeforeCurrentTime() {
     var pastTime = Instant.parse("2024-01-01T10:00:00Z");
-    var fixedClock = Clock.fixed(
-        pastTime,
-        ZoneId.systemDefault()
-    );
+    var currentTime = pastTime.plus(1, ChronoUnit.DAYS);
+    var futureTime = currentTime.plusSeconds(1);
+    var mutableClock = new MutableClock(pastTime);
 
-    var expirationTime = ExpirationTime.from(pastTime, fixedClock);
+    var expirationTime = ExpirationTime.from(currentTime, mutableClock);
+    mutableClock.setInstant(futureTime);
 
-    assertThat(expirationTime.isExpired(fixedClock)).isTrue();
+    assertThat(expirationTime.isExpired()).isTrue();
   }
 
   @DisplayName("만료시간이 현재 시간보다 이후라면 false를 반환한다")
@@ -97,7 +98,7 @@ class ExpirationTimeTest {
 
     var expirationTime = ExpirationTime.from(currentTime, fixedClock);
 
-    assertThat(expirationTime.isExpired(fixedClock)).isFalse();
+    assertThat(expirationTime.isExpired()).isFalse();
   }
 
   @DisplayName("만료시간이 동일하다면 동일한 객체이다")
