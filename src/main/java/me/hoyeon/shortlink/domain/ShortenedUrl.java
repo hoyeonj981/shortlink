@@ -13,13 +13,12 @@ public class ShortenedUrl {
   public static ShortenedUrl create(
       Long id,
       String url,
-      AliasGenerator generator,
+      Alias alias,
       int expirationDays,
       Clock clock
   ) {
     var urlId = new ShortenedUrlId(id);
     var originalUrl = new OriginalUrl(url);
-    var alias = generator.shorten(url);
     var expirationTime = ExpirationTime.fromNowTo(expirationDays, clock);
 
     return new ShortenedUrl(
