@@ -52,6 +52,6 @@ class ShortenedUrlCreatorTest {
     var result = creator.create(givenOriginalUrl);
 
     assertThat(result.getOriginalUrlToString()).isEqualTo(givenOriginalUrl);
-    assertThat(result.getAliasToString()).isEqualTo(expectedAlias);
+    assertThat(result.getAliasToString()).isEqualTo(givenAlias);
   }
 }
