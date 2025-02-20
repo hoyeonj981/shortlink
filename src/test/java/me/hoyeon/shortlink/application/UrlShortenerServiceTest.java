@@ -115,7 +115,7 @@ class UrlShortenerServiceTest {
         givenUrl,
         alias,
         givenDays,
-       mutableClock
+        mutableClock
     );
     doAnswer(invocation -> {
       mutableClock.setInstant(currentTime.plus(givenDays + 1, ChronoUnit.DAYS));
