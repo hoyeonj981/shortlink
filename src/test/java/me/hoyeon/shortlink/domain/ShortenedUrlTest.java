@@ -65,6 +65,7 @@ class ShortenedUrlTest {
 
     var shortenedUrl = ShortenedUrl.create(
         givenId, givenOriginalUrl, givenAlias, givenDays, mutableClock);
+
     mutableClock.setInstant(STANDARD_TIME.plus(givenDays + 1, ChronoUnit.DAYS));
 
     assertThatThrownBy(() -> shortenedUrl.updateExpirationDays(givenDays + 1, futureClock))
