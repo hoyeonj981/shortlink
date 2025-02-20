@@ -4,26 +4,17 @@ import static java.time.ZoneId.systemDefault;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
 import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-@ExtendWith(MockitoExtension.class)
 class ShortenedUrlTest {
 
   private static final Instant STANDARD_TIME = Instant.parse("2024-02-02T10:00:00Z");
   private static final Clock STANDARD_CLOCK = Clock.fixed(STANDARD_TIME, systemDefault());
-
-  @Mock
-  private AliasGenerator generator;
 
   @DisplayName("원본 url가 주어지면 단축 url을 생성한다")
   @Test
@@ -32,10 +23,9 @@ class ShortenedUrlTest {
     var givenOriginalUrl = "https://example.com";
     var givenDays = 1;
     var givenAlias = new Alias("abcdef");
-    when(generator.shorten(anyString())).thenReturn(givenAlias);
 
     var shortenedUrl = ShortenedUrl.create(
-        givenId, givenOriginalUrl, generator, givenDays, STANDARD_CLOCK);
+        givenId, givenOriginalUrl, givenAlias, givenDays, STANDARD_CLOCK);
 
     assertThat(shortenedUrl.getOriginalUrlToString()).isEqualTo(givenOriginalUrl);
     assertThat(shortenedUrl.getAliasToString()).isEqualTo(givenAlias.getValue());
@@ -52,10 +42,9 @@ class ShortenedUrlTest {
         STANDARD_TIME.minus(1, ChronoUnit.DAYS),
         systemDefault()
     );
-    when(generator.shorten(anyString())).thenReturn(givenAlias);
 
     var shortenedUrl = ShortenedUrl.create(
-        givenId, givenOriginalUrl, generator, givenDays, STANDARD_CLOCK);
+        givenId, givenOriginalUrl, givenAlias, givenDays, STANDARD_CLOCK);
 
     assertThatCode(() -> shortenedUrl.updateExpirationDays(givenDays, pastTime))
         .doesNotThrowAnyException();
@@ -73,10 +62,10 @@ class ShortenedUrlTest {
         systemDefault()
     );
     var mutableClock = new MutableClock(STANDARD_TIME);
-    when(generator.shorten(anyString())).thenReturn(givenAlias);
 
     var shortenedUrl = ShortenedUrl.create(
-        givenId, givenOriginalUrl, generator, givenDays, mutableClock);
+        givenId, givenOriginalUrl, givenAlias, givenDays, mutableClock);
+
     mutableClock.setInstant(STANDARD_TIME.plus(givenDays + 1, ChronoUnit.DAYS));
 
     assertThatThrownBy(() -> shortenedUrl.updateExpirationDays(givenDays + 1, futureClock))
@@ -91,10 +80,9 @@ class ShortenedUrlTest {
     var givenDays = 1;
     var givenAlias = new Alias("abcdef");
     var mutableClock = new MutableClock(STANDARD_TIME);
-    when(generator.shorten(anyString())).thenReturn(givenAlias);
 
     var shortenedUrl = ShortenedUrl.create(
-        givenId, givenOriginalUrl, generator, givenDays, mutableClock);
+        givenId, givenOriginalUrl, givenAlias, givenDays, mutableClock);
     mutableClock.setInstant(STANDARD_TIME.plus(givenDays + 1, ChronoUnit.DAYS));
 
     assertThat(shortenedUrl.isAccessible()).isFalse();
@@ -111,10 +99,9 @@ class ShortenedUrlTest {
         STANDARD_TIME.minus(1, ChronoUnit.DAYS),
         systemDefault()
     );
-    when(generator.shorten(anyString())).thenReturn(givenAlias);
 
     var shortenedUrl = ShortenedUrl.create(
-        givenId, givenOriginalUrl, generator, givenDays, STANDARD_CLOCK);
+        givenId, givenOriginalUrl, givenAlias, givenDays, STANDARD_CLOCK);
 
     assertThat(shortenedUrl.isAccessible()).isTrue();
   }
@@ -127,12 +114,11 @@ class ShortenedUrlTest {
     var givenOriginalUrl = "https://example.com";
     var givenDays = 1;
     var givenAlias = new Alias("abcdef");
-    when(generator.shorten(anyString())).thenReturn(givenAlias);
 
     var shortenedUrl1 = ShortenedUrl.create(
-        givenId1, givenOriginalUrl, generator, givenDays, STANDARD_CLOCK);
+        givenId1, givenOriginalUrl, givenAlias, givenDays, STANDARD_CLOCK);
     var shortenedUrl2 = ShortenedUrl.create(
-        givenId2, givenOriginalUrl, generator, givenDays, STANDARD_CLOCK);
+        givenId2, givenOriginalUrl, givenAlias, givenDays, STANDARD_CLOCK);
 
     assertThat(givenId1).isEqualTo(givenId2);
     assertThat(shortenedUrl1).isEqualTo(shortenedUrl2);
@@ -146,12 +132,11 @@ class ShortenedUrlTest {
     var givenOriginalUrl = "https://example.com";
     var givenDays = 1;
     var givenAlias = new Alias("abcdef");
-    when(generator.shorten(anyString())).thenReturn(givenAlias);
 
     var shortenedUrl1 = ShortenedUrl.create(
-        givenId1, givenOriginalUrl, generator, givenDays, STANDARD_CLOCK);
+        givenId1, givenOriginalUrl, givenAlias, givenDays, STANDARD_CLOCK);
     var shortenedUrl2 = ShortenedUrl.create(
-        givenId2, givenOriginalUrl, generator, givenDays, STANDARD_CLOCK);
+        givenId2, givenOriginalUrl, givenAlias, givenDays, STANDARD_CLOCK);
 
     assertThat(givenId1).isNotEqualTo(givenId2);
     assertThat(shortenedUrl1).isNotEqualTo(shortenedUrl2);
