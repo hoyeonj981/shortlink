@@ -14,7 +14,7 @@ public class MutableClock extends Clock {
 
   @Override
   public ZoneId getZone() {
-    return null;
+    return ZoneId.systemDefault();
   }
 
   @Override
