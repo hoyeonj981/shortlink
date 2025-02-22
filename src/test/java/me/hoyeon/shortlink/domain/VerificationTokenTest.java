@@ -73,4 +73,55 @@ class VerificationTokenTest {
     assertThatThrownBy(() -> VerificationToken.create(givenToken, expirationMinutes, STANDARD_CLOCK))
         .isInstanceOf(InvalidDurationTimeException.class);
   }
+
+  @DisplayName("토큰 값과 만료 시간이 동일하면 같은 객체이다.")
+  @Test
+  void sameObjectIfTokenValueAndExpirationTimeIsSame() {
+    var givenToken1 = "abcde";
+    var expirationMinutes1 = 5;
+    var givenToken2 = givenToken1;
+    var expirationMinutes2 = expirationMinutes1;
+
+    var token1 = VerificationToken.create(givenToken1, expirationMinutes1,
+        STANDARD_CLOCK);
+    var token2 = VerificationToken.create(givenToken2, expirationMinutes2,
+        STANDARD_CLOCK);
+
+    assertThat(token1).isEqualTo(token2);
+  }
+
+  @DisplayName("토큰 값이 같아도 만료 시간이 다르다면 다른 객체이다")
+  @Test
+  void differentObjectIfExpirationTimeIsNotSame() {
+    var givenToken1 = "abcde";
+    var expirationMinutes1 = 5;
+    var givenToken2 = givenToken1;
+    var expirationMinutes2 = 10;
+
+    var token1 = VerificationToken.create(givenToken1, expirationMinutes1,
+        STANDARD_CLOCK);
+    var token2 = VerificationToken.create(givenToken2, expirationMinutes2,
+        STANDARD_CLOCK);
+
+    assertThat(expirationMinutes1).isNotEqualTo(expirationMinutes2);
+    assertThat(token1).isNotEqualTo(token2);
+  }
+
+  @DisplayName("토큰 값과 만료 시간이 다르다면 다른 객체이다")
+  @Test
+  void differenetObjectIfTokenValueAndExpirationTimeIsNotSame() {
+    var givenToken1 = "abcde";
+    var expirationMinutes1 = 5;
+    var givenToken2 = "ABCDE";
+    var expirationMinutes2 = 10;
+
+    var token1 = VerificationToken.create(givenToken1, expirationMinutes1,
+        STANDARD_CLOCK);
+    var token2 = VerificationToken.create(givenToken2, expirationMinutes2,
+        STANDARD_CLOCK);
+
+    assertThat(givenToken1).isNotEqualTo(givenToken2);
+    assertThat(expirationMinutes1).isNotEqualTo(expirationMinutes2);
+    assertThat(token1).isNotEqualTo(token2);
+  }
 }

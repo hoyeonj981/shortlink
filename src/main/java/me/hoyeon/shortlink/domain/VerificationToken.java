@@ -3,7 +3,7 @@ package me.hoyeon.shortlink.domain;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 
 public class VerificationToken {
 
@@ -43,5 +43,20 @@ public class VerificationToken {
     var now = Instant.now(clock);
     var between = Duration.between(createdAt, now);
     return between.compareTo(validDuration) > 0;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    VerificationToken that = (VerificationToken) o;
+    return Objects.equals(token, that.token) && Objects.equals(validDuration,
+        that.validDuration);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(token, validDuration);
   }
 }
