@@ -30,7 +30,7 @@ class UnverifiedMemberTest {
   void throwExceptionIfGivenTokenDoesNotMatch() {
     var givenId = 1L;
     var givenToken = "abcdef";
-    var givenEmail = "test@example.com";
+    var givenEmail = Email.of("test@example.com");
     var givenPassword = EncryptedPassword.create("abcde123!", encoder);
     doThrow(TokenMismatchException.class).when(token).verify(anyString());
 
@@ -45,7 +45,7 @@ class UnverifiedMemberTest {
   void throwExceptionIfTokenIsExpired() {
     var givenId = 1L;
     var givenToken = "abcdef";
-    var givenEmail = "test@example.com";
+    var givenEmail = Email.of("test@example.com");
     var givenPassword = EncryptedPassword.create("abcde123!", encoder);
     doThrow(TokenExpiredException.class).when(token).verify(anyString());
 
@@ -60,7 +60,7 @@ class UnverifiedMemberTest {
   void createVerifiedMemberWhenTokenMatchesAndIsNotExpired() {
     var givenId = 1L;
     var givenToken = "abcdef";
-    var givenEmail = "test@example.com";
+    var givenEmail = Email.of("test@example.com");
     var givenPassword = EncryptedPassword.create("abcde123!", encoder);
     var member = UnverifiedMember.create(givenId, givenEmail, givenPassword, token);
 
@@ -72,10 +72,10 @@ class UnverifiedMemberTest {
   @Test
   void returnTrueIfGivenPasswordMatchesCurrentPassword() {
     var givenId = 1L;
-    var emailAddress = "test@example.com";
+    var givenEmail = Email.of("test@example.com");
     var password = "abcde1234!";
     var givenPassword = EncryptedPassword.create(password, encoder);
-    var member = UnverifiedMember.create(givenId, emailAddress, givenPassword, token);
+    var member = UnverifiedMember.create(givenId, givenEmail, givenPassword, token);
     when(encoder.matches(any(), any())).thenReturn(true);
 
     var actual = member.matchPassword(password, encoder);
@@ -87,10 +87,10 @@ class UnverifiedMemberTest {
   @Test
   void returnFalseIfGivenPasswordDoesNotMatchCurrentPassword() {
     var givenId = 1L;
-    var emailAddress = "test@example.com";
+    var givenEmail = Email.of("test@example.com");
     var password = "abcde1234!";
     var givenPassword = EncryptedPassword.create(password, encoder);
-    var member = UnverifiedMember.create(givenId, emailAddress, givenPassword, token);
+    var member = UnverifiedMember.create(givenId, givenEmail, givenPassword, token);
     when(encoder.matches(any(), any())).thenReturn(false);
 
     var actual = member.matchPassword(password, encoder);
@@ -103,7 +103,7 @@ class UnverifiedMemberTest {
   void sameObjectIfIdValueIsSame() {
     var givenId1 = 1L;
     var givenId2 = 1L;
-    var givenEmail = "test@example.com";
+    var givenEmail = Email.of("test@example.com");
     var givenPassword = EncryptedPassword.create("abcde123!", encoder);
     var member1 = UnverifiedMember.create(givenId1, givenEmail, givenPassword, token);
     var member2 = UnverifiedMember.create(givenId2, givenEmail, givenPassword, token);
@@ -117,7 +117,7 @@ class UnverifiedMemberTest {
   void differentObjectIfIdValueIsNotSame() {
     var givenId1 = 1L;
     var givenId2 = 2L;
-    var givenEmail = "test@example.com";
+    var givenEmail = Email.of("test@example.com");
     var givenPassword = EncryptedPassword.create("abcde123!", encoder);
     var member1 = UnverifiedMember.create(givenId1, givenEmail, givenPassword, token);
     var member2 = UnverifiedMember.create(givenId2, givenEmail, givenPassword, token);

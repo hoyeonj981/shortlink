@@ -9,9 +9,9 @@ public class UnverifiedMember {
   private final EncryptedPassword password;
   private final VerificationToken token;
 
-  public static UnverifiedMember create(Long id, String email, EncryptedPassword password,
+  public static UnverifiedMember create(Long id, Email email, EncryptedPassword password,
       VerificationToken token) {
-    return new UnverifiedMember(id, Email.of(email), password, token);
+    return new UnverifiedMember(id, email, password, token);
   }
 
   public UnverifiedMember(
