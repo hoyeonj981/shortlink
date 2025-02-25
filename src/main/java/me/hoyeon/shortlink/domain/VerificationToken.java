@@ -32,11 +32,21 @@ public class VerificationToken {
     }
   }
 
-  public boolean isVerified(String token) {
+  public void verify(String token) {
+    matches(token);
+    validateExpiration();
+  }
+
+  private void matches(String token) {
     if (!this.token.equals(token)) {
-      return false;
+      throw new TokenMismatchException(token);
     }
-    return !isExpired();
+  }
+
+  private void validateExpiration() {
+    if (isExpired()) {
+      throw new TokenExpiredException();
+    }
   }
 
   private boolean isExpired() {
