@@ -15,7 +15,7 @@ class EncryptedPasswordTest {
   @Test
   void shouldEncryptPasswordAndCreatePasswordObject() {
     var givenPassword = "randompassword";
-    var encodedPassword = "encodedpassword";
+    var encodedPassword= "encodedpassword";
     var mockEncoder = mock(PasswordEncoder.class);
     when(mockEncoder.encode(anyString())).thenReturn(encodedPassword);
 
@@ -29,7 +29,7 @@ class EncryptedPasswordTest {
   @Test
   void methodMatchesShouldReturnTrueIfPasswordIsCorrect() {
     var givenPassword = "randompassword";
-    var encodedPassword = "encodedpassword";
+    var encodedPassword= "encodedpassword";
     var mockEncoder = mock(PasswordEncoder.class);
     when(mockEncoder.encode(anyString())).thenReturn(encodedPassword);
     when(mockEncoder.matches(anyString(), anyString())).thenReturn(true);
@@ -43,7 +43,7 @@ class EncryptedPasswordTest {
   @Test
   void methodMatchesShouldReturnFalseIfPasswordIsNotCorrect() {
     var givenPassword = "randompassword";
-    var encodedPassword = "encodedpassword";
+    var encodedPassword= "encodedpassword";
     var mockEncoder = mock(PasswordEncoder.class);
     when(mockEncoder.encode(anyString())).thenReturn(encodedPassword);
     when(mockEncoder.matches(anyString(), anyString())).thenReturn(false);
