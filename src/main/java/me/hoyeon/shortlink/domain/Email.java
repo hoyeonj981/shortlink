@@ -4,9 +4,16 @@ import java.util.Objects;
 
 public class Email {
 
+  private static final EmailValidator DEFAULT_VALIDATOR = new RegexEmailValidator();
+
   private final String address;
 
   public static Email of(String emailAddress) {
+    return Email.from(emailAddress, DEFAULT_VALIDATOR);
+  }
+
+  public static Email from(String emailAddress, EmailValidator validator) {
+    validator.validate(emailAddress);
     return new Email(emailAddress);
   }
 
