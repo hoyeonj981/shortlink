@@ -1,5 +1,7 @@
 package me.hoyeon.shortlink.domain;
 
+import java.util.Objects;
+
 public class EncryptedPassword {
 
   private final String hashedValue;
@@ -19,5 +21,10 @@ public class EncryptedPassword {
   @Override
   public int hashCode() {
     return System.identityHashCode(hashedValue);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    return o == this;
   }
 }

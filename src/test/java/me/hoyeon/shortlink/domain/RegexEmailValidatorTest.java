@@ -33,14 +33,15 @@ class RegexEmailValidatorTest {
       "user@subdomain.example.com",
       "user@123.45.67.89"
   })
-  void returnTrueForValidEmails(String email) {
-    boolean result = emailValidator.isValid(email);
+  void shouldReturnTrueForValidEmails(String email) {
+    var result = emailValidator.isValid(email);
 
     assertThat(result).isTrue();
   }
 
   @DisplayName("잘못된 이메일 형식이면 false를 반환한다")
   @ParameterizedTest
+  @NullAndEmptySource
   @ValueSource(strings = {
       "user",
       "user@",
@@ -48,19 +49,10 @@ class RegexEmailValidatorTest {
       "user@exam ple.com",
       "user@exam\tple.com",
       "user@exam_ple.com",
+      " ", "  ", "\t", "\n"
   })
-  void returnFalseForInvalidEmails(String email) {
-    boolean result = emailValidator.isValid(email);
-
-    assertThat(result).isFalse();
-  }
-
-  @DisplayName("null 또는 빈 문자열인 경우 false를 반환한다")
-  @ParameterizedTest
-  @NullAndEmptySource
-  @ValueSource(strings = {" ", "  ", "\t", "\n"})
-  void returnFalseForNullOrBlankEmails(String email) {
-    boolean result = emailValidator.isValid(email);
+  void shouldReturnFalseForInvalidEmails(String email) {
+    var result = emailValidator.isValid(email);
 
     assertThat(result).isFalse();
   }
@@ -72,7 +64,7 @@ class RegexEmailValidatorTest {
       "user.name@example.co.kr",
       "user_name@example.com"
   })
-  void throwExceptionForValidEmails(String email) {
+  void shouldThrowExceptionForValidEmails(String email) {
     assertThatCode(() -> emailValidator.validate(email))
         .doesNotThrowAnyException();
   }
@@ -84,14 +76,14 @@ class RegexEmailValidatorTest {
       "user@",
       "@example.com"
   })
-  void throwExceptionForInvalidEmails(String email) {
+  void shouldThrowExceptionForInvalidEmails(String email) {
     assertThatThrownBy(() -> emailValidator.validate(email))
         .isInstanceOf(InvalidEmailException.class);
   }
 
   @DisplayName("null인 경우 예외가 발생한다")
   @Test
-  void throwExceptionForNullEmail() {
+  void shouldThrowExceptionForNullEmail() {
     assertThatThrownBy(() -> emailValidator.validate(null))
         .isInstanceOf(InvalidEmailException.class);
   }
