@@ -61,7 +61,8 @@ class VerificationTokenTest {
     var givenToken = "abcde";
     var expirationMinutes = -1;
 
-    assertThatThrownBy(() -> VerificationToken.create(givenToken, expirationMinutes, STANDARD_CLOCK))
+    assertThatThrownBy(() ->
+        VerificationToken.create(givenToken, expirationMinutes, STANDARD_CLOCK))
         .isInstanceOf(InvalidDurationTimeException.class);
   }
 
@@ -71,7 +72,8 @@ class VerificationTokenTest {
     var givenToken = "abcde";
     var expirationMinutes = 0;
 
-    assertThatThrownBy(() -> VerificationToken.create(givenToken, expirationMinutes, STANDARD_CLOCK))
+    assertThatThrownBy(() ->
+        VerificationToken.create(givenToken, expirationMinutes, STANDARD_CLOCK))
         .isInstanceOf(InvalidDurationTimeException.class);
   }
 
