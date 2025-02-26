@@ -2,7 +2,6 @@ package me.hoyeon.shortlink.domain;
 
 import static java.time.ZoneId.systemDefault;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.Clock;
@@ -16,20 +15,9 @@ class VerificationTokenTest {
   private static final Instant STANDARD_TIME = Instant.parse("2024-02-02T10:00:00Z");
   private static final Clock STANDARD_CLOCK = Clock.fixed(STANDARD_TIME, systemDefault());
 
-  @DisplayName("주어진 토큰 값과 만료시간이 유효하다면 검증에 성공한다")
+  @DisplayName("주어진 토큰 값과 다르다면 false를 반환한다")
   @Test
-  void validateSuccessfullyIfGivenTokenMatchesAndTimeIsNotExpired() {
-    var givenToken = "abcde";
-    var expirationMinutes = 5;
-
-    var token = VerificationToken.create(givenToken, expirationMinutes, STANDARD_CLOCK);
-
-    assertThatCode(() -> token.verify(givenToken)).doesNotThrowAnyException();
-  }
-
-  @DisplayName("주어진 토큰 값과 다르다면 예외가 발생한다")
-  @Test
-  void throwExceptionIfGivenTokenIsNotCorrect() {
+  void returnFalseIfGivenTokenIsNotCorrect() {
     var givenToken = "abcde";
     var wrongToken = "1234";
     var expirationMinutes = 5;
@@ -37,13 +25,12 @@ class VerificationTokenTest {
     var token = VerificationToken.create(givenToken, expirationMinutes, STANDARD_CLOCK);
 
     assertThat(givenToken).isNotEqualTo(wrongToken);
-    assertThatThrownBy(() -> token.verify(wrongToken))
-        .isInstanceOf(TokenMismatchException.class);
+    assertThat(token.isVerified(wrongToken)).isFalse();
   }
 
-  @DisplayName("토큰 시간이 만료되었다면 예외가 발생한다")
+  @DisplayName("토큰값이 일치해도 시간이 만료되었다면 false를 반환한다")
   @Test
-  void throwExceptionIfTimeIsExpired() {
+  void returnFalseIfTimeIsExpired() {
     var givenToken = "abcde";
     var expirationMinutes = 5;
     var mutableClock = new MutableClock(STANDARD_TIME);
@@ -51,8 +38,20 @@ class VerificationTokenTest {
     var token = VerificationToken.create(givenToken, expirationMinutes, mutableClock);
     mutableClock.setInstant(STANDARD_TIME.plus(expirationMinutes + 1, ChronoUnit.MINUTES));
 
-    assertThatThrownBy(() -> token.verify(givenToken))
-        .isInstanceOf(TokenExpiredException.class);
+    assertThat(token.isVerified(givenToken)).isFalse();
+  }
+
+  @DisplayName("주어진 토큰 값과 일치하고 시간이 만료가 안 됐다면 true를 반환한다")
+  @Test
+  void returnTrueIfGivenTokenIsCorrectAndTimeIsNotExpired() {
+    var givenToken = "abcde";
+    var expirationMinutes = 5;
+    var mutableClock = new MutableClock(STANDARD_TIME);
+
+    var token = VerificationToken.create(givenToken, expirationMinutes, mutableClock);
+    mutableClock.setInstant(STANDARD_TIME.plus(1, ChronoUnit.MINUTES));
+
+    assertThat(token.isVerified(givenToken)).isTrue();
   }
 
   @DisplayName("만료 시간은 음수로 설정할 수 없다")
