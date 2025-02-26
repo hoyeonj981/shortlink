@@ -3,9 +3,7 @@ package me.hoyeon.shortlink.application;
 import static java.time.ZoneId.systemDefault;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -73,7 +71,7 @@ class MemberFactoryTest {
 
   @DisplayName("유효한 이메일과 비밀번호로 UnverifiedMember를 생성한다")
   @Test
-  void shouldCreateUnverifiedMemberWIthValidEmailAndPassword() {
+  void shouldCreateUnverifiedMemberWithValidEmailAndPassword() {
     var givenEmail = Email.of(VALID_EMAIL);
     var givenVerificationToken = mock(VerificationToken.class);
     doNothing().when(emailValidator).validate(VALID_EMAIL);

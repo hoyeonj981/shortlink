@@ -96,8 +96,8 @@ class VerifiedMemberTest {
     var member = VerifiedMember.create(givenId, givenEmail, givenPassword1);
     when(encoder.matches(any(), any())).thenReturn(true);
 
-   assertThatCode(() ->member.changePassword(currentPassword, newPassword, encoder))
-       .doesNotThrowAnyException();
+    assertThatCode(() -> member.changePassword(currentPassword, newPassword, encoder))
+        .doesNotThrowAnyException();
   }
 
   @DisplayName("id값이 동일하다면 같은 객체이다")
