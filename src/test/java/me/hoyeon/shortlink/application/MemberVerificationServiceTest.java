@@ -12,7 +12,6 @@ import java.util.Optional;
 import me.hoyeon.shortlink.domain.MemberRepository;
 import me.hoyeon.shortlink.domain.UnverifiedMember;
 import me.hoyeon.shortlink.domain.VerifiedMember;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
