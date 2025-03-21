@@ -1,6 +1,7 @@
 package me.hoyeon.shortlink.application;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -37,10 +38,10 @@ class MemberVerificationServiceTest {
   @DisplayName("인증 이메일 전송에 성공한다")
   @Test
   void sendVerificationEmailSuccessfully() {
-    var givenMemberId = 1L;
     var unverifiedMember = mock(UnverifiedMember.class);
     when(unverifiedMember.getEmailString()).thenReturn(TEST_EMAIL);
     when(unverifiedMember.getTokenString()).thenReturn(TEST_TOKEN);
+    var givenMemberId = 1L;
     when(memberRepository.findUnverifiedById(anyLong())).thenReturn(Optional.of(unverifiedMember));
 
     verificationService.sendVerificationMail(givenMemberId);
