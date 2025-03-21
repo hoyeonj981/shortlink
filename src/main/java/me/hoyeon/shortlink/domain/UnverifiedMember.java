@@ -39,6 +39,14 @@ public class UnverifiedMember {
     return this.password.matches(rawPassword, encoder);
   }
 
+  public String getTokenString() {
+    return this.token.getTokenValue();
+  }
+
+  public String getEmailString() {
+    return this.email.getAddress();
+  }
+
   @Override
   public boolean equals(Object o) {
     if (o == null || getClass() != o.getClass()) {

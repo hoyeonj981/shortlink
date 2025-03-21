@@ -43,6 +43,12 @@ sonar {
 				"${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
 		property("sonar.java.checkstyle.reportPaths",
 				"${buildDir}/reports/checkstyle/main.xml")
+
+		property(
+			"sonar.coverage.exclusions",
+			"**/me/hoyeon/shortlink/*Application.java,"
+			+ "**/me/hoyeon/shortlink/infrastructure/*Properties.java"
+		)
 	}
 }
 
@@ -63,6 +69,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-mail");
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("com.h2database:h2")
@@ -106,7 +113,8 @@ tasks.jacocoTestReport {
 			files(classDirectories.files.map {
 				fileTree(it) {
 					exclude(
-							"**/me/hoyeon/shortlink/*Application.class"
+						"**/me/hoyeon/shortlink/*Application.class",
+						"**/me/hoyeon/shortlink/infrastructure/*Properties.class"
 					)
 				}
 			})

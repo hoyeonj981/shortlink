@@ -55,6 +55,10 @@ public class VerificationToken {
     return between.compareTo(validDuration) > 0;
   }
 
+  public String getTokenValue() {
+    return this.token;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (o == null || getClass() != o.getClass()) {
