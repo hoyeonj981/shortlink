@@ -2,7 +2,7 @@ package me.hoyeon.shortlink.domain;
 
 import java.util.Objects;
 
-public class UnverifiedMember {
+public class UnverifiedMember implements Member {
 
   private final Long memberId;
   private final Email email;
@@ -35,16 +35,32 @@ public class UnverifiedMember {
     return VerifiedMember.create(this.memberId, this.email, this.password);
   }
 
-  public boolean matchPassword(String rawPassword, PasswordEncoder encoder) {
-    return this.password.matches(rawPassword, encoder);
-  }
-
   public String getTokenString() {
     return this.token.getTokenValue();
   }
 
   public String getEmailString() {
     return this.email.getAddress();
+  }
+
+  @Override
+  public boolean matchPassword(String rawPassword, PasswordEncoder encoder) {
+    return this.password.matches(rawPassword, encoder);
+  }
+
+  @Override
+  public Long getId() {
+    return this.memberId;
+  }
+
+  @Override
+  public Email getEmail() {
+    return this.email;
+  }
+
+  @Override
+  public boolean isVerified() {
+    return false;
   }
 
   @Override

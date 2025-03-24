@@ -125,4 +125,17 @@ class UnverifiedMemberTest {
     assertThat(givenId1).isNotEqualTo(givenId2);
     assertThat(member1).isNotEqualTo(member2);
   }
+
+  @DisplayName("미인증된 회원은 isVerified 메서드에서 항상 거짓 값을 반환한다")
+  @Test
+  void unVerifiedMemberShouldReturnFalseForIsVerifiedMethod() {
+    var givenId = 1L;
+    var emailAddress = "test@example.com";
+    var givenEmail = Email.of(emailAddress);
+    var password1 = "abcde1234!";
+    var givenPassword1 = EncryptedPassword.create(password1, encoder);
+    var member = UnverifiedMember.create(givenId, givenEmail, givenPassword1, token);
+
+    assertThat(member.isVerified()).isFalse();
+  }
 }
