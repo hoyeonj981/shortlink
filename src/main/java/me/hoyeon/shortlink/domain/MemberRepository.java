@@ -7,4 +7,6 @@ public interface MemberRepository {
   Optional<UnverifiedMember> findUnverifiedById(Long memberId);
 
   void save(VerifiedMember verifiedMember);
+
+  Optional<Member> findByEmail(Email email);
 }
