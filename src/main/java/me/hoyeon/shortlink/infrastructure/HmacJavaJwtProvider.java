@@ -3,6 +3,7 @@ package me.hoyeon.shortlink.infrastructure;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import java.time.Clock;
 import java.time.Instant;
 import me.hoyeon.shortlink.application.AuthenticationException;
@@ -52,6 +53,13 @@ public class HmacJavaJwtProvider implements JwtTokenProvider {
 
   @Override
   public void validate(String token) throws InvalidJwtTokenException {
-
+    try {
+      JWT.require(algorithm)
+          .withIssuer(jwtProperties.getIssuer())
+          .build()
+          .verify(token);
+    } catch (JWTVerificationException e) {
+      throw new InvalidJwtTokenException(e.getMessage(), e);
+    }
   }
 }

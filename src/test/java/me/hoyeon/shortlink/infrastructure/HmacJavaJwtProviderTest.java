@@ -1,12 +1,14 @@
 package me.hoyeon.shortlink.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import me.hoyeon.shortlink.application.InvalidJwtTokenException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -50,5 +52,55 @@ class HmacJavaJwtProviderTest {
 
     assertThatThrownBy(() -> new HmacJavaJwtProvider(jwtProperties,  Clock.systemDefaultZone()))
         .isInstanceOf(IllegalArgumentException.class);
+  }
+
+  @DisplayName("유효한 토큰을 검증한다")
+  @Test
+  void validateValidToken() {
+    var jwtProperties = mock(HmacJwtProperties.class);
+    when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
+    when(jwtProperties.getAlgorithm()).thenReturn("HS256");
+    when(jwtProperties.getIssuer()).thenReturn(ISSUER);
+    when(jwtProperties.getExpiration()).thenReturn(3600000L);
+    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone());
+    var validToken = jwtProvider.generateAccessToken(1L);
+
+    assertThatCode(() -> jwtProvider.validate(validToken))
+        .doesNotThrowAnyException();
+  }
+
+  @DisplayName("잘못된 서명으로 서명된 토큰은 예외를 발생시킨다")
+  @Test
+  void throwExceptionForInvalidSignatureToken() {
+    var jwtProperties = mock(HmacJwtProperties.class);
+    when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
+    when(jwtProperties.getAlgorithm()).thenReturn("HS256");
+    when(jwtProperties.getIssuer()).thenReturn(ISSUER);
+    when(jwtProperties.getExpiration()).thenReturn(3600000L);
+    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone());
+
+    var tokenWithWrongSignature = JWT.create()
+        .withIssuer(ISSUER)
+        .withClaim("memberId", 1L)
+        .sign(Algorithm.HMAC256("wrong-secret-key"));
+
+    assertThatThrownBy(() -> jwtProvider.validate(tokenWithWrongSignature))
+        .isInstanceOf(InvalidJwtTokenException.class);
+  }
+
+  @DisplayName("만료된 토큰은 예외를 발생시킨다")
+  @Test
+  void throwExceptionForExpiredToken() {
+    var jwtProperties = mock(HmacJwtProperties.class);
+    when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
+    when(jwtProperties.getAlgorithm()).thenReturn("HS256");
+    when(jwtProperties.getIssuer()).thenReturn(ISSUER);
+    when(jwtProperties.getExpiration()).thenReturn(-1L);
+    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone());
+
+    var expiredToken = jwtProvider.generateAccessToken(1L);
+
+    assertThatThrownBy(() -> jwtProvider.validate(expiredToken))
+        .isInstanceOf(InvalidJwtTokenException.class);
   }
 }

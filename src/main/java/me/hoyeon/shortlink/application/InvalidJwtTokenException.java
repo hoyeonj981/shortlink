@@ -7,4 +7,8 @@ public class InvalidJwtTokenException extends RuntimeException {
   public InvalidJwtTokenException() {
     super(MESSAGE);
   }
+
+  public InvalidJwtTokenException(String message, Throwable e) {
+    super(message, e);
+  }
 }
