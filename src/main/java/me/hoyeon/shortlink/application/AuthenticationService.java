@@ -37,4 +37,9 @@ public class AuthenticationService {
       throw new AuthenticationException(e.getMessage(), e);
     }
   }
+
+  public void signOut(String jwtToken) {
+    jwtTokenProvider.validate(jwtToken);
+    jwtTokenProvider.invalidate(jwtToken);
+  }
 }

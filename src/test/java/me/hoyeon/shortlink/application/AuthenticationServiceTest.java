@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -89,5 +90,25 @@ class AuthenticationServiceTest {
 
     assertThatThrownBy(() -> authenticationService.signIn(TEST_EMAIL, TEST_PASSWORD))
         .isInstanceOf(MismatchPasswordException.class);
+  }
+
+  @DisplayName("로그아웃에 성공하면 토큰이 무효화된다")
+  @Test
+  void invalidateAccessTokenSuccessfullyWhenSignOut() {
+    doNothing().when(jwtTokenProvider).validate(anyString());
+    doNothing().when(jwtTokenProvider).invalidate(anyString());
+
+    authenticationService.signOut(ACCESS_TOKEN);
+
+    verify(jwtTokenProvider).invalidate(ACCESS_TOKEN);
+  }
+
+  @DisplayName("로그아웃할 토큰이 유효하지 않다면 예외가 발생한다")
+  @Test
+  void throwExceptionWhenAccessTokenIsInvalidWhenSignOut() {
+    doThrow(InvalidJwtTokenException.class).when(jwtTokenProvider).validate(anyString());
+
+    assertThatThrownBy(() -> authenticationService.signOut(ACCESS_TOKEN))
+        .isInstanceOf(InvalidJwtTokenException.class);
   }
 }
