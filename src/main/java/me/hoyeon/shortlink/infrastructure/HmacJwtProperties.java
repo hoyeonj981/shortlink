@@ -5,7 +5,8 @@ public class HmacJwtProperties {
   private String issuer;
   private String secret;
   private String algorithm;
-  private long expiration;
+  private long accessExpiration;
+  private long refreshExpiration;
 
   public String getIssuer() {
     return issuer;
@@ -31,11 +32,19 @@ public class HmacJwtProperties {
     this.algorithm = algorithm;
   }
 
-  public long getExpiration() {
-    return expiration;
+  public long getAccessExpiration() {
+    return accessExpiration;
   }
 
-  public void setExpiration(long expiration) {
-    this.expiration = expiration;
+  public void setAccessExpiration(long accessExpiration) {
+    this.accessExpiration = accessExpiration;
+  }
+
+  public long getRefreshExpiration() {
+    return refreshExpiration;
+  }
+
+  public void setRefreshExpiration(long refreshExpiration) {
+    this.refreshExpiration = refreshExpiration;
   }
 }

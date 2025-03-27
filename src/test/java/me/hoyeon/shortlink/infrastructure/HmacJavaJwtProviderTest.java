@@ -26,7 +26,7 @@ class HmacJavaJwtProviderTest {
     when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
     when(jwtProperties.getAlgorithm()).thenReturn("HS256");
     when(jwtProperties.getIssuer()).thenReturn(ISSUER);
-    when(jwtProperties.getExpiration()).thenReturn(3600000L);
+    when(jwtProperties.getAccessExpiration()).thenReturn(3600000L);
     var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone());
     var memberId = 1L;
 
@@ -48,7 +48,7 @@ class HmacJavaJwtProviderTest {
     when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
     when(jwtProperties.getAlgorithm()).thenReturn("INVALID-ALGORITHM");
     when(jwtProperties.getIssuer()).thenReturn(ISSUER);
-    when(jwtProperties.getExpiration()).thenReturn(3600000L);
+    when(jwtProperties.getAccessExpiration()).thenReturn(3600000L);
 
     assertThatThrownBy(() -> new HmacJavaJwtProvider(jwtProperties,  Clock.systemDefaultZone()))
         .isInstanceOf(IllegalArgumentException.class);
@@ -61,7 +61,7 @@ class HmacJavaJwtProviderTest {
     when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
     when(jwtProperties.getAlgorithm()).thenReturn("HS256");
     when(jwtProperties.getIssuer()).thenReturn(ISSUER);
-    when(jwtProperties.getExpiration()).thenReturn(3600000L);
+    when(jwtProperties.getAccessExpiration()).thenReturn(3600000L);
     var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone());
     var validToken = jwtProvider.generateAccessToken(1L);
 
@@ -76,7 +76,7 @@ class HmacJavaJwtProviderTest {
     when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
     when(jwtProperties.getAlgorithm()).thenReturn("HS256");
     when(jwtProperties.getIssuer()).thenReturn(ISSUER);
-    when(jwtProperties.getExpiration()).thenReturn(3600000L);
+    when(jwtProperties.getAccessExpiration()).thenReturn(3600000L);
     var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone());
 
     var tokenWithWrongSignature = JWT.create()
@@ -95,7 +95,7 @@ class HmacJavaJwtProviderTest {
     when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
     when(jwtProperties.getAlgorithm()).thenReturn("HS256");
     when(jwtProperties.getIssuer()).thenReturn(ISSUER);
-    when(jwtProperties.getExpiration()).thenReturn(-1L);
+    when(jwtProperties.getAccessExpiration()).thenReturn(-1L);
     var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone());
 
     var expiredToken = jwtProvider.generateAccessToken(1L);
