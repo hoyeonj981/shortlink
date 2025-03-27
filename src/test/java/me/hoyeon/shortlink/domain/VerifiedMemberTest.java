@@ -133,4 +133,17 @@ class VerifiedMemberTest {
     assertThat(givenId1).isNotEqualTo(givenId2);
     assertThat(member1).isNotEqualTo(member2);
   }
+
+  @DisplayName("인증된 회원은 isVerified 메서드에서 항상 참 값을 반환한다")
+  @Test
+  void verifiedMemberShouldReturnTrueForIsVerifiedMethod() {
+    var givenId = 1L;
+    var emailAddress = "test@example.com";
+    var givenEmail = Email.of(emailAddress);
+    var password1 = "abcde1234!";
+    var givenPassword1 = EncryptedPassword.create(password1, encoder);
+    var member = VerifiedMember.create(givenId, givenEmail, givenPassword1);
+
+    assertThat(member.isVerified()).isTrue();
+  }
 }

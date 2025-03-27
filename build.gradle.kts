@@ -46,8 +46,9 @@ sonar {
 
 		property(
 			"sonar.coverage.exclusions",
-			"**/me/hoyeon/shortlink/*Application.java,"
-			+ "**/me/hoyeon/shortlink/infrastructure/*Properties.java"
+					"**/me/hoyeon/shortlink/*Application.java," +
+					"**/me/hoyeon/shortlink/infrastructure/*Properties.java," +
+					"**/*Exception.java"
 		)
 	}
 }
@@ -69,7 +70,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.springframework.boot:spring-boot-starter-mail");
+	implementation("org.springframework.boot:spring-boot-starter-mail")
+	implementation("com.auth0:java-jwt:4.5.0")
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("com.h2database:h2")
@@ -114,7 +116,8 @@ tasks.jacocoTestReport {
 				fileTree(it) {
 					exclude(
 						"**/me/hoyeon/shortlink/*Application.class",
-						"**/me/hoyeon/shortlink/infrastructure/*Properties.class"
+						"**/me/hoyeon/shortlink/infrastructure/*Properties.class",
+						"**/*Exception.class"
 					)
 				}
 			})

@@ -3,7 +3,7 @@ package me.hoyeon.shortlink.domain;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class VerifiedMember {
+public class VerifiedMember implements Member {
 
   private final Long memberId;
   private final Email email;
@@ -60,8 +60,24 @@ public class VerifiedMember {
     }
   }
 
+  @Override
   public boolean matchPassword(String rawPassword, PasswordEncoder encoder) {
     return this.password.matches(rawPassword, encoder);
+  }
+
+  @Override
+  public Long getId() {
+    return this.memberId;
+  }
+
+  @Override
+  public Email getEmail() {
+    return this.email;
+  }
+
+  @Override
+  public boolean isVerified() {
+    return true;
   }
 
   @Override
