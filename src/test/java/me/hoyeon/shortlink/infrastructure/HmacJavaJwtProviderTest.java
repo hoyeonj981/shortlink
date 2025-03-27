@@ -8,11 +8,11 @@ import static org.mockito.Mockito.when;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import java.time.Clock;
 import me.hoyeon.shortlink.application.InvalidJwtTokenException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.time.Clock;
 
 class HmacJavaJwtProviderTest {
 
@@ -31,14 +31,14 @@ class HmacJavaJwtProviderTest {
     var memberId = 1L;
 
     var token = jwtProvider.generateAccessToken(memberId);
-    var decodedJWT = JWT.require(Algorithm.HMAC256(MY_SECRET_KEY))
+    assertThat(token).isNotNull();
+
+    var decodedJwt = JWT.require(Algorithm.HMAC256(MY_SECRET_KEY))
         .withIssuer(ISSUER)
         .build()
         .verify(token);
-
-    assertThat(token).isNotNull();
-    assertThat(decodedJWT.getIssuer()).isEqualTo(ISSUER);
-    assertThat(decodedJWT.getClaim("memberId").asLong()).isEqualTo(memberId);
+    assertThat(decodedJwt.getIssuer()).isEqualTo(ISSUER);
+    assertThat(decodedJwt.getClaim("memberId").asLong()).isEqualTo(memberId);
   }
 
   @DisplayName("JWT 생성 실패할 경우 예외가 발생한다")
