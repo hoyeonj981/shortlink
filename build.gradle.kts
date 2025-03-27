@@ -46,8 +46,9 @@ sonar {
 
 		property(
 			"sonar.coverage.exclusions",
-			"**/me/hoyeon/shortlink/*Application.java,"
-			+ "**/me/hoyeon/shortlink/infrastructure/*Properties.java"
+					"**/me/hoyeon/shortlink/*Application.java," +
+					"**/me/hoyeon/shortlink/infrastructure/*Properties.java," +
+					"**/*Exception.java"
 		)
 	}
 }
@@ -115,7 +116,8 @@ tasks.jacocoTestReport {
 				fileTree(it) {
 					exclude(
 						"**/me/hoyeon/shortlink/*Application.class",
-						"**/me/hoyeon/shortlink/infrastructure/*Properties.class"
+						"**/me/hoyeon/shortlink/infrastructure/*Properties.class",
+						"**/*Exception.class"
 					)
 				}
 			})
