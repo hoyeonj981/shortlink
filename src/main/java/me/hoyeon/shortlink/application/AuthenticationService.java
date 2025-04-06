@@ -25,14 +25,17 @@ public class AuthenticationService {
     this.emailValidator = emailValidator;
   }
 
-  public String signIn(String rawEmail, String rawPassword) {
+  public SignInResponse signIn(String rawEmail, String rawPassword) {
     try {
       var email = Email.from(rawEmail, emailValidator);
       var member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
       if (!member.matchPassword(rawPassword, passwordEncoder)) {
         throw new MismatchPasswordException();
       }
-      return jwtTokenProvider.generateAccessToken(member.getId());
+      return new SignInResponse(
+          jwtTokenProvider.generateAccessToken(member.getId()),
+          jwtTokenProvider.generateRefreshToken(member.getId())
+      );
     } catch (InvalidEmailException e) {
       throw new AuthenticationException(e.getMessage(), e);
     }

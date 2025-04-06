@@ -30,7 +30,8 @@ class AuthenticationServiceTest {
 
   private static final String TEST_EMAIL = "test@example.com";
   private static final String TEST_PASSWORD = "password";
-  public static final String ACCESS_TOKEN = "access-token";
+  private static final String ACCESS_TOKEN = "access-token";
+  private static final String REFRESH_TOKEN = "refresh-token";
 
   @Mock
   private MemberRepository memberRepository;
@@ -55,10 +56,13 @@ class AuthenticationServiceTest {
     doNothing().when(emailValidator).validate(anyString());
     when(member.matchPassword(anyString(), eq(passwordEncoder))).thenReturn(true);
     when(jwtTokenProvider.generateAccessToken(anyLong())).thenReturn(ACCESS_TOKEN);
+    when(jwtTokenProvider.generateRefreshToken(anyLong())).thenReturn(REFRESH_TOKEN);
 
     var result = authenticationService.signIn(TEST_EMAIL, TEST_PASSWORD);
 
-    assertThat(result).isEqualTo(ACCESS_TOKEN);
+    assertThat(result).isNotNull();
+    assertThat(result.accessToken()).isEqualTo(ACCESS_TOKEN);
+    assertThat(result.refreshToken()).isEqualTo(REFRESH_TOKEN);
   }
 
   @DisplayName("이메일 형식이 올바르지 않는다면 예외가 발생한다")
