@@ -58,7 +58,7 @@ public class HmacJavaJwtProvider implements JwtTokenProvider {
           .withClaim("tokenId", tokenId)
           .withExpiresAt(expiration)
           .sign(algorithm);
-    } catch (JWTCreationException e) {
+    } catch (IllegalArgumentException | JWTCreationException e) {
       throw new AuthenticationException(e.getMessage(), e);
     }
   }

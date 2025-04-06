@@ -19,6 +19,7 @@ class HmacJavaJwtProviderTest {
 
   private static final String MY_SECRET_KEY = "my-secret-key";
   private static final String ISSUER = "issuer";
+  private static final String EMPTY_SECRET = "";
 
   @DisplayName("유효한 엑세스 토큰을 생성한다")
   @Test
@@ -131,7 +132,7 @@ class HmacJavaJwtProviderTest {
   @Test
   void throwAuthenticationExceptionIfJwtCreationFailsWhenCreatingRefreshToken() {
     var jwtProperties = mock(HmacJwtProperties.class);
-    when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
+    when(jwtProperties.getSecret()).thenReturn(EMPTY_SECRET);
     when(jwtProperties.getAlgorithm()).thenReturn("HS256");
     when(jwtProperties.getIssuer()).thenReturn(ISSUER);
     when(jwtProperties.getRefreshExpiration()).thenReturn(7200000L);
