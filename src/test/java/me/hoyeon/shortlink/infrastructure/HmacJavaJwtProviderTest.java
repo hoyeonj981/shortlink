@@ -107,7 +107,7 @@ class HmacJavaJwtProviderTest {
 
   @DisplayName("유효한 리프레시 토큰을 생성한다")
   @Test
-  void test() {
+  void createValidRefreshToken() {
     var jwtProperties = mock(HmacJwtProperties.class);
     when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
     when(jwtProperties.getAlgorithm()).thenReturn("HS256");
@@ -129,7 +129,7 @@ class HmacJavaJwtProviderTest {
 
   @DisplayName("리프레시 토큰 생성 시 JWT 생성에 실패할 경우 예외가 발생한다")
   @Test
-  void test2() {
+  void throwAuthenticationExceptionIfJwtCreationFailsWhenCreatingRefreshToken() {
     var jwtProperties = mock(HmacJwtProperties.class);
     when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
     when(jwtProperties.getAlgorithm()).thenReturn("HS256");
