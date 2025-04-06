@@ -6,6 +6,7 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.UUID;
 import me.hoyeon.shortlink.application.AuthenticationException;
 import me.hoyeon.shortlink.application.InvalidJwtTokenException;
 import me.hoyeon.shortlink.application.JwtTokenProvider;
@@ -35,7 +36,7 @@ public class HmacJavaJwtProvider implements JwtTokenProvider {
   public String generateAccessToken(Long memberId) {
     try {
       Instant expiration = Instant.now(clock)
-          .plusSeconds(jwtProperties.getExpiration());
+          .plusSeconds(jwtProperties.getAccessExpiration());
       return JWT.create()
           .withIssuer(jwtProperties.getIssuer())
           .withClaim("memberId", memberId)
@@ -47,8 +48,30 @@ public class HmacJavaJwtProvider implements JwtTokenProvider {
   }
 
   @Override
-  public void invalidate(String token) {
+  public String generateRefreshToken(Long memberId) {
+    try {
+      var expiration = Instant.now(clock).plusSeconds(jwtProperties.getRefreshExpiration());
+      var tokenId = UUID.randomUUID().toString();
+      return JWT.create()
+          .withIssuer(jwtProperties.getIssuer())
+          .withClaim("memberId", memberId)
+          .withClaim("tokenId", tokenId)
+          .withExpiresAt(expiration)
+          .sign(algorithm);
+    } catch (IllegalArgumentException | JWTCreationException e) {
+      throw new AuthenticationException(e.getMessage(), e);
+    }
+  }
 
+  @Override
+  public String refreshAccessToken(String refreshToken) throws InvalidJwtTokenException {
+    validate(refreshToken);
+    var memberId = JWT.decode(refreshToken).getClaim("memberId").asLong();
+    return generateAccessToken(memberId);
+  }
+
+  @Override
+  public void invalidate(String token) {
   }
 
   @Override
