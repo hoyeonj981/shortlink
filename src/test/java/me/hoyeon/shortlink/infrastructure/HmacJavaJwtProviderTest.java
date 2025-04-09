@@ -3,12 +3,19 @@ package me.hoyeon.shortlink.infrastructure;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import java.time.Clock;
+import java.time.Instant;
+import java.util.Date;
 import me.hoyeon.shortlink.application.AuthenticationException;
 import me.hoyeon.shortlink.application.InvalidJwtTokenException;
 import org.junit.jupiter.api.DisplayName;
@@ -25,11 +32,13 @@ class HmacJavaJwtProviderTest {
   @Test
   void generateValidAccessToken() {
     var jwtProperties = mock(HmacJwtProperties.class);
+    var jwtRepository = mock(JwtRepository.class);
     when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
     when(jwtProperties.getAlgorithm()).thenReturn("HS256");
     when(jwtProperties.getIssuer()).thenReturn(ISSUER);
     when(jwtProperties.getAccessExpiration()).thenReturn(3600000L);
-    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone());
+    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone(),
+        jwtRepository);
     var memberId = 1L;
 
     var token = jwtProvider.generateAccessToken(memberId);
@@ -47,12 +56,14 @@ class HmacJavaJwtProviderTest {
   @Test
   void throwAuthenticationExceptionIfJwtCreationFails() {
     var jwtProperties = mock(HmacJwtProperties.class);
+    var jwtRepository = mock(JwtRepository.class);
     when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
     when(jwtProperties.getAlgorithm()).thenReturn("INVALID-ALGORITHM");
     when(jwtProperties.getIssuer()).thenReturn(ISSUER);
     when(jwtProperties.getAccessExpiration()).thenReturn(3600000L);
 
-    assertThatThrownBy(() -> new HmacJavaJwtProvider(jwtProperties,  Clock.systemDefaultZone()))
+    assertThatThrownBy(() -> new HmacJavaJwtProvider(jwtProperties,  Clock.systemDefaultZone(),
+        jwtRepository))
         .isInstanceOf(IllegalArgumentException.class);
   }
 
@@ -60,11 +71,13 @@ class HmacJavaJwtProviderTest {
   @Test
   void validateValidToken() {
     var jwtProperties = mock(HmacJwtProperties.class);
+    var jwtRepository = mock(JwtRepository.class);
     when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
     when(jwtProperties.getAlgorithm()).thenReturn("HS256");
     when(jwtProperties.getIssuer()).thenReturn(ISSUER);
     when(jwtProperties.getAccessExpiration()).thenReturn(3600000L);
-    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone());
+    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone(),
+        jwtRepository);
     var validToken = jwtProvider.generateAccessToken(1L);
 
     assertThatCode(() -> jwtProvider.validate(validToken))
@@ -75,11 +88,13 @@ class HmacJavaJwtProviderTest {
   @Test
   void throwExceptionForInvalidSignatureToken() {
     var jwtProperties = mock(HmacJwtProperties.class);
+    var jwtRepository = mock(JwtRepository.class);
     when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
     when(jwtProperties.getAlgorithm()).thenReturn("HS256");
     when(jwtProperties.getIssuer()).thenReturn(ISSUER);
     when(jwtProperties.getAccessExpiration()).thenReturn(3600000L);
-    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone());
+    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone(),
+        jwtRepository);
 
     var tokenWithWrongSignature = JWT.create()
         .withIssuer(ISSUER)
@@ -94,11 +109,13 @@ class HmacJavaJwtProviderTest {
   @Test
   void throwExceptionForExpiredToken() {
     var jwtProperties = mock(HmacJwtProperties.class);
+    var jwtRepository = mock(JwtRepository.class);
     when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
     when(jwtProperties.getAlgorithm()).thenReturn("HS256");
     when(jwtProperties.getIssuer()).thenReturn(ISSUER);
     when(jwtProperties.getAccessExpiration()).thenReturn(-1L);
-    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone());
+    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone(),
+        jwtRepository);
 
     var expiredToken = jwtProvider.generateAccessToken(1L);
 
@@ -110,11 +127,13 @@ class HmacJavaJwtProviderTest {
   @Test
   void createValidRefreshToken() {
     var jwtProperties = mock(HmacJwtProperties.class);
+    var jwtRepository = mock(JwtRepository.class);
     when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
     when(jwtProperties.getAlgorithm()).thenReturn("HS256");
     when(jwtProperties.getIssuer()).thenReturn(ISSUER);
     when(jwtProperties.getRefreshExpiration()).thenReturn(7200000L);
-    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone());
+    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone(),
+        jwtRepository);
     var memberId = 1L;
 
     var refreshToken = jwtProvider.generateRefreshToken(memberId);
@@ -132,14 +151,67 @@ class HmacJavaJwtProviderTest {
   @Test
   void throwAuthenticationExceptionIfJwtCreationFailsWhenCreatingRefreshToken() {
     var jwtProperties = mock(HmacJwtProperties.class);
+    var jwtRepository = mock(JwtRepository.class);
     when(jwtProperties.getSecret()).thenReturn(EMPTY_SECRET);
     when(jwtProperties.getAlgorithm()).thenReturn("HS256");
     when(jwtProperties.getIssuer()).thenReturn(ISSUER);
     when(jwtProperties.getRefreshExpiration()).thenReturn(7200000L);
-    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone());
+    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone(),
+        jwtRepository);
     var memberId = 1L;
 
     assertThatThrownBy(() -> jwtProvider.generateRefreshToken(memberId))
         .isInstanceOf(AuthenticationException.class);
   }
+
+  @DisplayName("JWT가 블랙리스트에 없다면 블랙리스트에 추가한다")
+  @Test
+  void addJwtToBlackListIfItIsNotInBlackList() {
+    var jwtProperties = mock(HmacJwtProperties.class);
+    when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
+    when(jwtProperties.getAlgorithm()).thenReturn("HS256");
+    when(jwtProperties.getIssuer()).thenReturn(ISSUER);
+    when(jwtProperties.getAccessExpiration()).thenReturn(3600000L);
+    var jwtRepository = mock(JwtRepository.class);
+    when(jwtRepository.isBlackListed(anyString())).thenReturn(false);
+    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone(),
+        jwtRepository);
+    var givenToken = createTestJwtToken(3600000L);
+
+    jwtProvider.invalidate(givenToken);
+
+    verify(jwtRepository).isBlackListed(givenToken);
+    verify(jwtRepository).addToBlackList(eq(givenToken), anyLong());
+  }
+
+  @DisplayName("JWT가 이미 블랙리스트에 등록되었다면 아무 동작을 수행하지 않는다")
+  @Test
+  void doNothingIfJwtIsInBlackList() {
+    var jwtProperties = mock(HmacJwtProperties.class);
+    when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
+    when(jwtProperties.getAlgorithm()).thenReturn("HS256");
+    when(jwtProperties.getIssuer()).thenReturn(ISSUER);
+    when(jwtProperties.getAccessExpiration()).thenReturn(3600000L);
+    var jwtRepository = mock(JwtRepository.class);
+    when(jwtRepository.isBlackListed(anyString())).thenReturn(true);
+    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone(),
+        jwtRepository);
+    var givenToken = createTestJwtToken(3600000L);
+
+    jwtProvider.invalidate(givenToken);
+
+    verify(jwtRepository).isBlackListed(givenToken);
+    verify(jwtRepository, never()).addToBlackList(eq(givenToken), anyLong());
+  }
+
+  private String createTestJwtToken(long expiresInSeconds) {
+    var algorithm = Algorithm.HMAC256(MY_SECRET_KEY);
+    var expiresAt = Date.from(Instant.now().plusSeconds(expiresInSeconds));
+
+    return JWT.create()
+        .withIssuer(ISSUER)
+        .withExpiresAt(expiresAt)
+        .sign(algorithm);
+  }
+
 }

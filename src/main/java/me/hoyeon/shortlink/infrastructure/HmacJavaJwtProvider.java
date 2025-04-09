@@ -16,11 +16,17 @@ public class HmacJavaJwtProvider implements JwtTokenProvider {
   private final HmacJwtProperties jwtProperties;
   private final Algorithm algorithm;
   private final Clock clock;
+  private final JwtRepository jwtRepository;
 
-  public HmacJavaJwtProvider(HmacJwtProperties jwtProperties, Clock clock) {
+  public HmacJavaJwtProvider(
+      HmacJwtProperties jwtProperties,
+      Clock clock,
+      JwtRepository jwtRepository
+  ) {
     this.jwtProperties = jwtProperties;
     this.algorithm = selectAlgorithm(jwtProperties.getAlgorithm());
     this.clock = clock;
+    this.jwtRepository = jwtRepository;
   }
 
   private Algorithm selectAlgorithm(String algorithm) {
@@ -72,6 +78,10 @@ public class HmacJavaJwtProvider implements JwtTokenProvider {
 
   @Override
   public void invalidate(String token) {
+    if (!jwtRepository.isBlackListed(token)) {
+      var expiresAt = JWT.decode(token).getExpiresAt();
+      jwtRepository.addToBlackList(token, expiresAt.getTime());
+    }
   }
 
   @Override
