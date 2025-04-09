@@ -14,7 +14,6 @@ import me.hoyeon.shortlink.application.JwtTokenProvider;
 public class HmacJavaJwtProvider implements JwtTokenProvider {
 
   private final HmacJwtProperties jwtProperties;
-  private final Algorithm algorithm;
   private final Clock clock;
   private final JwtRepository jwtRepository;
 
@@ -24,24 +23,15 @@ public class HmacJavaJwtProvider implements JwtTokenProvider {
       JwtRepository jwtRepository
   ) {
     this.jwtProperties = jwtProperties;
-    this.algorithm = selectAlgorithm(jwtProperties.getAlgorithm());
     this.clock = clock;
     this.jwtRepository = jwtRepository;
-  }
-
-  private Algorithm selectAlgorithm(String algorithm) {
-    return switch (algorithm) {
-      case "HS256" -> Algorithm.HMAC256(jwtProperties.getSecret());
-      case "HS384" -> Algorithm.HMAC384(jwtProperties.getSecret());
-      case "HS512" -> Algorithm.HMAC512(jwtProperties.getSecret());
-      default -> throw new IllegalArgumentException("지원하지 않는 알고리즘입니다" + algorithm);
-    };
   }
 
   @Override
   public String generateAccessToken(Long memberId) {
     try {
-      Instant expiration = Instant.now(clock)
+      var algorithm = selectAlgorithm(jwtProperties.getAlgorithm());
+      var expiration = Instant.now(clock)
           .plusSeconds(jwtProperties.getAccessExpiration());
       return JWT.create()
           .withIssuer(jwtProperties.getIssuer())
@@ -56,6 +46,7 @@ public class HmacJavaJwtProvider implements JwtTokenProvider {
   @Override
   public String generateRefreshToken(Long memberId) {
     try {
+      var algorithm = selectAlgorithm(jwtProperties.getAlgorithm());
       var expiration = Instant.now(clock).plusSeconds(jwtProperties.getRefreshExpiration());
       var tokenId = UUID.randomUUID().toString();
       return JWT.create()
@@ -78,6 +69,7 @@ public class HmacJavaJwtProvider implements JwtTokenProvider {
 
   @Override
   public void invalidate(String token) {
+    validate(token);
     if (!jwtRepository.isBlackListed(token)) {
       var expiresAt = JWT.decode(token).getExpiresAt();
       jwtRepository.addToBlackList(token, expiresAt.getTime());
@@ -87,12 +79,22 @@ public class HmacJavaJwtProvider implements JwtTokenProvider {
   @Override
   public void validate(String token) throws InvalidJwtTokenException {
     try {
+      var algorithm = selectAlgorithm(jwtProperties.getAlgorithm());
       JWT.require(algorithm)
           .withIssuer(jwtProperties.getIssuer())
           .build()
           .verify(token);
-    } catch (JWTVerificationException e) {
+    } catch (IllegalArgumentException | JWTVerificationException e) {
       throw new InvalidJwtTokenException(e.getMessage(), e);
     }
+  }
+
+  private Algorithm selectAlgorithm(String algorithm) {
+    return switch (algorithm) {
+      case "HS256" -> Algorithm.HMAC256(jwtProperties.getSecret());
+      case "HS384" -> Algorithm.HMAC384(jwtProperties.getSecret());
+      case "HS512" -> Algorithm.HMAC512(jwtProperties.getSecret());
+      default -> throw new IllegalArgumentException("지원하지 않는 알고리즘입니다" + algorithm);
+    };
   }
 }

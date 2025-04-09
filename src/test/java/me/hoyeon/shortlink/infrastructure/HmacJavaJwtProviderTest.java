@@ -18,6 +18,8 @@ import java.time.Instant;
 import java.util.Date;
 import me.hoyeon.shortlink.application.AuthenticationException;
 import me.hoyeon.shortlink.application.InvalidJwtTokenException;
+import me.hoyeon.shortlink.application.JwtTokenProvider;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -28,56 +30,57 @@ class HmacJavaJwtProviderTest {
   private static final String ISSUER = "issuer";
   private static final String EMPTY_SECRET = "";
 
+  private JwtTokenProvider jwtProvider;
+
+  private JwtRepository jwtRepository;
+
+  private HmacJwtProperties jwtProperties;
+
+  @BeforeEach
+  void setUp() {
+    jwtProperties = new HmacJwtProperties();
+    jwtProperties.setSecret(MY_SECRET_KEY);
+    jwtProperties.setAlgorithm("HS256");
+    jwtProperties.setIssuer(ISSUER);
+    jwtProperties.setAccessExpiration(3600000L);
+    jwtProperties.setRefreshExpiration(7200000L);
+
+    jwtRepository = mock(JwtRepository.class);
+    jwtProvider = new HmacJavaJwtProvider(
+        jwtProperties,
+        Clock.systemDefaultZone(),
+        jwtRepository);
+  }
+
   @DisplayName("유효한 엑세스 토큰을 생성한다")
   @Test
   void generateValidAccessToken() {
-    var jwtProperties = mock(HmacJwtProperties.class);
-    var jwtRepository = mock(JwtRepository.class);
-    when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
-    when(jwtProperties.getAlgorithm()).thenReturn("HS256");
-    when(jwtProperties.getIssuer()).thenReturn(ISSUER);
-    when(jwtProperties.getAccessExpiration()).thenReturn(3600000L);
-    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone(),
-        jwtRepository);
     var memberId = 1L;
 
     var token = jwtProvider.generateAccessToken(memberId);
-    assertThat(token).isNotNull();
-
     var decodedJwt = JWT.require(Algorithm.HMAC256(MY_SECRET_KEY))
         .withIssuer(ISSUER)
         .build()
         .verify(token);
+
+    assertThat(token).isNotNull();
     assertThat(decodedJwt.getIssuer()).isEqualTo(ISSUER);
     assertThat(decodedJwt.getClaim("memberId").asLong()).isEqualTo(memberId);
   }
 
-  @DisplayName("JWT 생성 실패할 경우 예외가 발생한다")
+  @DisplayName("액세스 토큰 생성 시 JWT 생성 실패할 경우 예외가 발생한다")
   @Test
   void throwAuthenticationExceptionIfJwtCreationFails() {
-    var jwtProperties = mock(HmacJwtProperties.class);
-    var jwtRepository = mock(JwtRepository.class);
-    when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
-    when(jwtProperties.getAlgorithm()).thenReturn("INVALID-ALGORITHM");
-    when(jwtProperties.getIssuer()).thenReturn(ISSUER);
-    when(jwtProperties.getAccessExpiration()).thenReturn(3600000L);
+    var memberId = 1L;
+    jwtProperties.setSecret(EMPTY_SECRET);
 
-    assertThatThrownBy(() -> new HmacJavaJwtProvider(jwtProperties,  Clock.systemDefaultZone(),
-        jwtRepository))
+    assertThatThrownBy(() -> jwtProvider.generateAccessToken(memberId))
         .isInstanceOf(IllegalArgumentException.class);
   }
 
   @DisplayName("유효한 토큰을 검증한다")
   @Test
   void validateValidToken() {
-    var jwtProperties = mock(HmacJwtProperties.class);
-    var jwtRepository = mock(JwtRepository.class);
-    when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
-    when(jwtProperties.getAlgorithm()).thenReturn("HS256");
-    when(jwtProperties.getIssuer()).thenReturn(ISSUER);
-    when(jwtProperties.getAccessExpiration()).thenReturn(3600000L);
-    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone(),
-        jwtRepository);
     var validToken = jwtProvider.generateAccessToken(1L);
 
     assertThatCode(() -> jwtProvider.validate(validToken))
@@ -87,15 +90,6 @@ class HmacJavaJwtProviderTest {
   @DisplayName("잘못된 서명으로 서명된 토큰은 예외를 발생시킨다")
   @Test
   void throwExceptionForInvalidSignatureToken() {
-    var jwtProperties = mock(HmacJwtProperties.class);
-    var jwtRepository = mock(JwtRepository.class);
-    when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
-    when(jwtProperties.getAlgorithm()).thenReturn("HS256");
-    when(jwtProperties.getIssuer()).thenReturn(ISSUER);
-    when(jwtProperties.getAccessExpiration()).thenReturn(3600000L);
-    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone(),
-        jwtRepository);
-
     var tokenWithWrongSignature = JWT.create()
         .withIssuer(ISSUER)
         .withClaim("memberId", 1L)
@@ -108,14 +102,7 @@ class HmacJavaJwtProviderTest {
   @DisplayName("만료된 토큰은 예외를 발생시킨다")
   @Test
   void throwExceptionForExpiredToken() {
-    var jwtProperties = mock(HmacJwtProperties.class);
-    var jwtRepository = mock(JwtRepository.class);
-    when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
-    when(jwtProperties.getAlgorithm()).thenReturn("HS256");
-    when(jwtProperties.getIssuer()).thenReturn(ISSUER);
-    when(jwtProperties.getAccessExpiration()).thenReturn(-1L);
-    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone(),
-        jwtRepository);
+    jwtProperties.setAccessExpiration(-1L);
 
     var expiredToken = jwtProvider.generateAccessToken(1L);
 
@@ -126,23 +113,15 @@ class HmacJavaJwtProviderTest {
   @DisplayName("유효한 리프레시 토큰을 생성한다")
   @Test
   void createValidRefreshToken() {
-    var jwtProperties = mock(HmacJwtProperties.class);
-    var jwtRepository = mock(JwtRepository.class);
-    when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
-    when(jwtProperties.getAlgorithm()).thenReturn("HS256");
-    when(jwtProperties.getIssuer()).thenReturn(ISSUER);
-    when(jwtProperties.getRefreshExpiration()).thenReturn(7200000L);
-    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone(),
-        jwtRepository);
     var memberId = 1L;
 
     var refreshToken = jwtProvider.generateRefreshToken(memberId);
-    assertThat(refreshToken).isNotNull();
-
     var decodedJwt = JWT.require(Algorithm.HMAC256(MY_SECRET_KEY))
         .withIssuer(ISSUER)
         .build()
         .verify(refreshToken);
+
+    assertThat(refreshToken).isNotNull();
     assertThat(decodedJwt.getIssuer()).isEqualTo(ISSUER);
     assertThat(decodedJwt.getClaim("memberId").asLong()).isEqualTo(memberId);
   }
@@ -150,15 +129,8 @@ class HmacJavaJwtProviderTest {
   @DisplayName("리프레시 토큰 생성 시 JWT 생성에 실패할 경우 예외가 발생한다")
   @Test
   void throwAuthenticationExceptionIfJwtCreationFailsWhenCreatingRefreshToken() {
-    var jwtProperties = mock(HmacJwtProperties.class);
-    var jwtRepository = mock(JwtRepository.class);
-    when(jwtProperties.getSecret()).thenReturn(EMPTY_SECRET);
-    when(jwtProperties.getAlgorithm()).thenReturn("HS256");
-    when(jwtProperties.getIssuer()).thenReturn(ISSUER);
-    when(jwtProperties.getRefreshExpiration()).thenReturn(7200000L);
-    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone(),
-        jwtRepository);
     var memberId = 1L;
+    jwtProperties.setSecret(EMPTY_SECRET);
 
     assertThatThrownBy(() -> jwtProvider.generateRefreshToken(memberId))
         .isInstanceOf(AuthenticationException.class);
@@ -167,15 +139,7 @@ class HmacJavaJwtProviderTest {
   @DisplayName("JWT가 블랙리스트에 없다면 블랙리스트에 추가한다")
   @Test
   void addJwtToBlackListIfItIsNotInBlackList() {
-    var jwtProperties = mock(HmacJwtProperties.class);
-    when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
-    when(jwtProperties.getAlgorithm()).thenReturn("HS256");
-    when(jwtProperties.getIssuer()).thenReturn(ISSUER);
-    when(jwtProperties.getAccessExpiration()).thenReturn(3600000L);
-    var jwtRepository = mock(JwtRepository.class);
     when(jwtRepository.isBlackListed(anyString())).thenReturn(false);
-    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone(),
-        jwtRepository);
     var givenToken = createTestJwtToken(3600000L);
 
     jwtProvider.invalidate(givenToken);
@@ -187,15 +151,7 @@ class HmacJavaJwtProviderTest {
   @DisplayName("JWT가 이미 블랙리스트에 등록되었다면 아무 동작을 수행하지 않는다")
   @Test
   void doNothingIfJwtIsInBlackList() {
-    var jwtProperties = mock(HmacJwtProperties.class);
-    when(jwtProperties.getSecret()).thenReturn(MY_SECRET_KEY);
-    when(jwtProperties.getAlgorithm()).thenReturn("HS256");
-    when(jwtProperties.getIssuer()).thenReturn(ISSUER);
-    when(jwtProperties.getAccessExpiration()).thenReturn(3600000L);
-    var jwtRepository = mock(JwtRepository.class);
     when(jwtRepository.isBlackListed(anyString())).thenReturn(true);
-    var jwtProvider = new HmacJavaJwtProvider(jwtProperties, Clock.systemDefaultZone(),
-        jwtRepository);
     var givenToken = createTestJwtToken(3600000L);
 
     jwtProvider.invalidate(givenToken);
@@ -213,5 +169,4 @@ class HmacJavaJwtProviderTest {
         .withExpiresAt(expiresAt)
         .sign(algorithm);
   }
-
 }
