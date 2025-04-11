@@ -42,7 +42,8 @@ class DbJwtRepositoryTest {
 
     var savedToken = captor.getValue();
     assertThat(savedToken.getToken()).isEqualTo(token);
-    assertThat(savedToken.getExpiredAt()).isEqualTo(LocalDateTime.ofInstant(Instant.ofEpochMilli(expireTime), ZoneId.systemDefault()));
+    assertThat(savedToken.getExpiredAt()).isEqualTo(LocalDateTime.ofInstant(
+        Instant.ofEpochMilli(expireTime), ZoneId.systemDefault()));
     assertThat(savedToken.getCreatedAt()).isEqualTo(LocalDateTime.now(clock));
   }
 
