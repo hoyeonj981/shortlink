@@ -1,6 +1,10 @@
 package me.hoyeon.shortlink.infrastructure;
 
-public interface BlackListedTokenJpaRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface BlackListedTokenJpaRepository extends JpaRepository<BlackListedToken, Long> {
 
   BlackListedToken save(BlackListedToken blackListedToken);
 

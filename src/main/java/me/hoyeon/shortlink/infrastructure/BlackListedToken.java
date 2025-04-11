@@ -1,12 +1,23 @@
 package me.hoyeon.shortlink.infrastructure;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+@Entity
 public class BlackListedToken {
 
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Id
   private Long id;
+
+  @Column(nullable = false, unique = true)
   private String token;
+
   private LocalDateTime expiredAt;
   private LocalDateTime createdAt;
 
