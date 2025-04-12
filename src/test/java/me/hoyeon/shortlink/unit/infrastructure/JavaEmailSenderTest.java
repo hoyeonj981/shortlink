@@ -1,4 +1,4 @@
-package me.hoyeon.shortlink.infrastructure;
+package me.hoyeon.shortlink.unit.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -16,6 +16,9 @@ import jakarta.mail.internet.MimeMessage;
 import me.hoyeon.shortlink.application.EmailSendException;
 import me.hoyeon.shortlink.domain.EmailValidator;
 import me.hoyeon.shortlink.domain.InvalidEmailException;
+import me.hoyeon.shortlink.infrastructure.EmailProperties;
+import me.hoyeon.shortlink.infrastructure.JavaEmailSender;
+import me.hoyeon.shortlink.infrastructure.RetryProperties;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

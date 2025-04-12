@@ -1,4 +1,4 @@
-package me.hoyeon.shortlink.infrastructure;
+package me.hoyeon.shortlink.unit.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -19,6 +19,9 @@ import java.util.Date;
 import me.hoyeon.shortlink.application.AuthenticationException;
 import me.hoyeon.shortlink.application.InvalidJwtTokenException;
 import me.hoyeon.shortlink.application.JwtTokenProvider;
+import me.hoyeon.shortlink.infrastructure.HmacJavaJwtProvider;
+import me.hoyeon.shortlink.infrastructure.HmacJwtProperties;
+import me.hoyeon.shortlink.infrastructure.JwtRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

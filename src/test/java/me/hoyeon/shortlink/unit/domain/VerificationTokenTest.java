@@ -1,4 +1,4 @@
-package me.hoyeon.shortlink.domain;
+package me.hoyeon.shortlink.unit.domain;
 
 import static java.time.ZoneId.systemDefault;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -8,6 +8,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import me.hoyeon.shortlink.domain.InvalidDurationTimeException;
+import me.hoyeon.shortlink.domain.TokenExpiredException;
+import me.hoyeon.shortlink.domain.TokenMismatchException;
+import me.hoyeon.shortlink.domain.VerificationToken;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

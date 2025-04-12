@@ -1,4 +1,4 @@
-package me.hoyeon.shortlink.domain;
+package me.hoyeon.shortlink.unit.domain;
 
 import java.time.Clock;
 import java.time.Instant;

@@ -1,4 +1,4 @@
-package me.hoyeon.shortlink.domain;
+package me.hoyeon.shortlink.unit.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -9,6 +9,14 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import me.hoyeon.shortlink.domain.Email;
+import me.hoyeon.shortlink.domain.EncryptedPassword;
+import me.hoyeon.shortlink.domain.PasswordEncoder;
+import me.hoyeon.shortlink.domain.TokenExpiredException;
+import me.hoyeon.shortlink.domain.TokenMismatchException;
+import me.hoyeon.shortlink.domain.UnverifiedMember;
+import me.hoyeon.shortlink.domain.VerificationFailedException;
+import me.hoyeon.shortlink.domain.VerificationToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

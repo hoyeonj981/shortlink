@@ -1,4 +1,4 @@
-package me.hoyeon.shortlink.application;
+package me.hoyeon.shortlink.unit.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -11,8 +11,13 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import me.hoyeon.shortlink.application.DuplicateUrlException;
+import me.hoyeon.shortlink.application.NotAccsibleUrlException;
+import me.hoyeon.shortlink.application.ShortenedUrlCreator;
+import me.hoyeon.shortlink.application.UrlNotFoundException;
+import me.hoyeon.shortlink.application.UrlShortenerService;
 import me.hoyeon.shortlink.domain.Alias;
-import me.hoyeon.shortlink.domain.MutableClock;
+import me.hoyeon.shortlink.unit.domain.MutableClock;
 import me.hoyeon.shortlink.domain.ShortenedUrl;
 import me.hoyeon.shortlink.domain.UrlMappingRepository;
 import org.junit.jupiter.api.DisplayName;
