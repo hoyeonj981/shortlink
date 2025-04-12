@@ -1,6 +1,6 @@
 package me.hoyeon.shortlink.domain;
 
-public class InvalidUrlException extends RuntimeException {
+public class InvalidUrlException extends DomainException {
 
   private static final String MESSAGE = "유효하지 않는 URL입니다.";
 
