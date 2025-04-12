@@ -1,6 +1,6 @@
 package me.hoyeon.shortlink.application;
 
-public class DuplicateUrlException extends RuntimeException {
+public class DuplicateUrlException extends ApplicationException {
 
   private static final String MESSAGE = "이미 존재하는 url입니다";
 

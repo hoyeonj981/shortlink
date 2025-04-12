@@ -1,6 +1,6 @@
 package me.hoyeon.shortlink.application;
 
-public class EmailSendException extends RuntimeException {
+public class EmailSendException extends ApplicationException {
 
   public static final String MESSAGE = "이메일 전송에 실패했습니다";
 
