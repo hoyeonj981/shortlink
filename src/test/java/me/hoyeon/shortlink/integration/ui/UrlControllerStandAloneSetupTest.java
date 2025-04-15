@@ -38,9 +38,9 @@ public class UrlControllerStandAloneSetupTest {
     objectMapper = new ObjectMapper();
   }
 
-  @DisplayName("POST /api/v1/urls - 유효한 요청을 보내면 단축된 URL을 생성 후 응답을 반환한다")
+  @DisplayName("POST 성공 /api/v1/urls - 유효한 요청을 보내면 단축된 URL을 생성 후 응답을 반환한다")
   @Test
-  void test() throws Exception {
+  void returnShortUrlResponseIfRequestIsValid() throws Exception {
     var originalUrl = "https://example.com";
     var alias = "abcdef";
     var request = new CreateShortUrlRequest(originalUrl);
@@ -56,9 +56,9 @@ public class UrlControllerStandAloneSetupTest {
     verify(urlShortenerService).shortenUrl(any());
   }
 
-  @DisplayName("GET /api/v1/urls/{alias} - 유효한 요청을 보내면 단축 URL을 반환한다")
+  @DisplayName("GET 성공 /api/v1/urls/{alias} - 유효한 요청을 보내면 단축 URL의 원본을 반환한다")
   @Test
-  void test1() throws Exception {
+  void getOriginalUrlIfRequestIsValid() throws Exception {
     var alias = "abcdef";
     var originalUrl = "https://example.com";
     when(urlShortenerService.getOriginalUrl(alias)).thenReturn(originalUrl);
