@@ -1,6 +1,6 @@
 package me.hoyeon.shortlink.domain;
 
-public class InvalidDurationTimeException extends RuntimeException {
+public class InvalidDurationTimeException extends DomainException {
 
   private static final String MESSAGE = "유효하지 않는 시간 기간입니다";
 

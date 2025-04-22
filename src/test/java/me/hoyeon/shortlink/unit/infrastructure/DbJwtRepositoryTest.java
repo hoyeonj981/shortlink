@@ -1,4 +1,4 @@
-package me.hoyeon.shortlink.infrastructure;
+package me.hoyeon.shortlink.unit.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -9,6 +9,9 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import me.hoyeon.shortlink.infrastructure.BlackListedToken;
+import me.hoyeon.shortlink.infrastructure.BlackListedTokenJpaRepository;
+import me.hoyeon.shortlink.infrastructure.DbJwtRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

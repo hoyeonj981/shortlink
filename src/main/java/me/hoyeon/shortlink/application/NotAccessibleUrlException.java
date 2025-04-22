@@ -1,10 +1,10 @@
 package me.hoyeon.shortlink.application;
 
-public class NotAccsibleUrlException extends RuntimeException {
+public class NotAccessibleUrlException extends ApplicationException {
 
   private static final String MESSAGE = "접근할 수 없는 URL입니다";
 
-  public NotAccsibleUrlException(String value) {
+  public NotAccessibleUrlException(String value) {
     super(MESSAGE + " - " + value);
   }
 }

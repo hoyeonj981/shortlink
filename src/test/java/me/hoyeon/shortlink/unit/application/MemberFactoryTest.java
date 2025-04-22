@@ -1,4 +1,4 @@
-package me.hoyeon.shortlink.application;
+package me.hoyeon.shortlink.unit.application;
 
 import static java.time.ZoneId.systemDefault;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -12,6 +12,8 @@ import static org.mockito.Mockito.when;
 
 import java.time.Clock;
 import java.time.Instant;
+import me.hoyeon.shortlink.application.MemberFactory;
+import me.hoyeon.shortlink.application.SimpleIdGenerator;
 import me.hoyeon.shortlink.domain.Email;
 import me.hoyeon.shortlink.domain.EmailValidator;
 import me.hoyeon.shortlink.domain.InvalidEmailException;

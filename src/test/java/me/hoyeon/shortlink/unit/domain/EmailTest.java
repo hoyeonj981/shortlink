@@ -1,7 +1,8 @@
-package me.hoyeon.shortlink.domain;
+package me.hoyeon.shortlink.unit.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import me.hoyeon.shortlink.domain.Email;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

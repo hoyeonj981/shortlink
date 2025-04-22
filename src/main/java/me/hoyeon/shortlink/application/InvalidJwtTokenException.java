@@ -1,6 +1,6 @@
 package me.hoyeon.shortlink.application;
 
-public class InvalidJwtTokenException extends RuntimeException {
+public class InvalidJwtTokenException extends ApplicationException {
 
   public static final String MESSAGE = "토큰 값이 유효하지 않습니다";
 

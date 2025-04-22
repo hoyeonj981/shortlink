@@ -1,6 +1,6 @@
 package me.hoyeon.shortlink.application;
 
-public class UrlNotFoundException extends RuntimeException {
+public class UrlNotFoundException extends ApplicationException {
 
   private static final String MESSAGE = "등록된 URL을 찾을 수 없습니다.";
 

@@ -1,6 +1,6 @@
 package me.hoyeon.shortlink.domain;
 
-public class NotAllowedSchemeException extends RuntimeException {
+public class NotAllowedSchemeException extends DomainException {
 
   private static final String MESSAGE = "HTTP(S) 스키마만 허용합니다";
 

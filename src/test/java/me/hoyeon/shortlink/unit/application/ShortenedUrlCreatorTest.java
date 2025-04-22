@@ -1,4 +1,4 @@
-package me.hoyeon.shortlink.application;
+package me.hoyeon.shortlink.unit.application;
 
 import static java.time.ZoneId.systemDefault;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -8,6 +8,8 @@ import static org.mockito.Mockito.when;
 
 import java.time.Clock;
 import java.time.Instant;
+import me.hoyeon.shortlink.application.ShortenedUrlCreator;
+import me.hoyeon.shortlink.application.SimpleIdGenerator;
 import me.hoyeon.shortlink.domain.Alias;
 import me.hoyeon.shortlink.domain.SimpleAliasGenerator;
 import org.junit.jupiter.api.BeforeEach;
