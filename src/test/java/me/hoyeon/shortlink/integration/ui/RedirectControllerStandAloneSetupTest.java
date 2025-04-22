@@ -38,7 +38,7 @@ public class RedirectControllerStandAloneSetupTest {
 
     @DisplayName("GET /{alias} - redirect에 성공하여 302를 반환한다")
     @Test
-    void redirectAliasToOriginalUrl() throws Exception{
+    void redirectAliasToOriginalUrl() throws Exception {
       var alias = "abcdef";
       var originalUrl = "https://example.com";
       when(urlShortenerService.getOriginalUrl(alias)).thenReturn(originalUrl);
