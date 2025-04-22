@@ -33,7 +33,7 @@ public class UrlShortenerService {
         .map(url -> {
           var originalUrl = url.getOriginalUrlToString();
           if (!url.isAccessible()) {
-            throw new NotAccsibleUrlException(originalUrl);
+            throw new NotAccessibleUrlException(originalUrl);
           }
           return originalUrl;
         })

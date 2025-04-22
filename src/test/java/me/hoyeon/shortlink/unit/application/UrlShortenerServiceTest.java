@@ -12,7 +12,7 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import me.hoyeon.shortlink.application.DuplicateUrlException;
-import me.hoyeon.shortlink.application.NotAccsibleUrlException;
+import me.hoyeon.shortlink.application.NotAccessibleUrlException;
 import me.hoyeon.shortlink.application.ShortenedUrlCreator;
 import me.hoyeon.shortlink.application.UrlNotFoundException;
 import me.hoyeon.shortlink.application.UrlShortenerService;
@@ -128,6 +128,6 @@ class UrlShortenerServiceTest {
     }).when(repository).findByAlias(givenAlias);
 
     assertThatThrownBy(() -> shortenerService.getOriginalUrl(givenAlias))
-        .isInstanceOf(NotAccsibleUrlException.class);
+        .isInstanceOf(NotAccessibleUrlException.class);
   }
 }
