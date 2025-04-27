@@ -1,16 +1,20 @@
 package me.hoyeon.shortlink.unit.application;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import me.hoyeon.shortlink.application.MemberAlreadyExists;
 import me.hoyeon.shortlink.application.MemberFactory;
 import me.hoyeon.shortlink.application.MemberRegistrationService;
 import me.hoyeon.shortlink.application.MemberVerificationService;
 import me.hoyeon.shortlink.application.OAuthCredentialRepository;
+import me.hoyeon.shortlink.application.OauthInfo;
 import me.hoyeon.shortlink.domain.MemberRepository;
 import me.hoyeon.shortlink.domain.UnverifiedMember;
+import me.hoyeon.shortlink.domain.VerifiedMember;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +24,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class MemberRegistrationServiceTest {
-
 
   @Mock
   private MemberFactory memberFactory;
@@ -39,7 +42,7 @@ class MemberRegistrationServiceTest {
 
   @DisplayName("이메일로 회원가입 시 새로운 미회원을 생성하고 인증 이메일을 전송한다")
   @Test
-  void test() {
+  void createNewMemberAndSendVerificationEmailSuccessfully() {
     var emailAddress = "test@example.com";
     var rawPassword = "test-password";
     var memberId = 1L;
@@ -56,16 +59,42 @@ class MemberRegistrationServiceTest {
 
   @DisplayName("이메일로 회원가입 시 이미 존재하는 이메일이면 예외가 발생한다")
   @Test
-  void test1() {
+  void throwExceptionWhenMemberAlreadyExistsDuringRegisteringWithEmailUsingEmailAddress() {
+    var emailAddress = "test@example.com";
+    var rawPassword = "test-password";
+    when(memberRepository.existsByEmail(any())).thenReturn(true);
+
+    assertThatThrownBy(() -> memberRegistrationService.registerWithEmail(emailAddress, rawPassword))
+        .isInstanceOf(MemberAlreadyExists.class);
   }
 
   @DisplayName("OAuth로 회원가입 시 새로운 인증회원을 생성하고 OAuth 정보를 저장한다")
   @Test
-  void test2() {
+  void createNewMemberAndSaveOAuthInfoSuccessfully() {
+    var emailAddress = "test@example.com";
+    var provider = "google";
+    var memberId = 1L;
+    var verifiedMember = mock(VerifiedMember.class);
+    var oauthInfo = new OauthInfo(emailAddress, provider);
+    when(verifiedMember.getId()).thenReturn(memberId);
+    when(memberFactory.createNewWithOauth(any())).thenReturn(verifiedMember);
+    when(memberRepository.existsByEmail(any())).thenReturn(false);
+
+    memberRegistrationService.registerWithOauth(oauthInfo);
+
+    verify(memberRepository).save(verifiedMember);
+    verify(oauthCredentialRepository).save(memberId, emailAddress, provider);
   }
 
   @DisplayName("OAuth로 회원가입 시 이미 존재하는 이메일이면 예외가 발생한다")
   @Test
-  void test3() {
+  void throwExceptionWhenMemberAlreadyExistsDuringRegisteringWithOauthUsingEmailAddress() {
+    var emailAddress = "test@example.com";
+    var provider = "google";
+    var oauthInfo = new OauthInfo(emailAddress, provider);
+    when(memberRepository.existsByEmail(any())).thenReturn(true);
+
+    assertThatThrownBy(() -> memberRegistrationService.registerWithOauth(oauthInfo))
+        .isInstanceOf(MemberAlreadyExists.class);
   }
 }
