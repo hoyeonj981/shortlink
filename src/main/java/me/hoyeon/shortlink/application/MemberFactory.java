@@ -1,6 +1,7 @@
 package me.hoyeon.shortlink.application;
 
 import java.time.Clock;
+import java.util.UUID;
 import me.hoyeon.shortlink.domain.Email;
 import me.hoyeon.shortlink.domain.EmailValidator;
 import me.hoyeon.shortlink.domain.EncryptedPassword;
@@ -8,6 +9,7 @@ import me.hoyeon.shortlink.domain.PasswordEncoder;
 import me.hoyeon.shortlink.domain.PasswordValidator;
 import me.hoyeon.shortlink.domain.UnverifiedMember;
 import me.hoyeon.shortlink.domain.VerificationTokenGenerator;
+import me.hoyeon.shortlink.domain.VerifiedMember;
 
 public class MemberFactory {
 
@@ -45,5 +47,16 @@ public class MemberFactory {
   private EncryptedPassword createEncryptedPassword(String rawPassword) {
     passwordValidator.validate(rawPassword);
     return EncryptedPassword.create(rawPassword, passwordEncoder);
+  }
+
+  public VerifiedMember createNewWithOauth(String emailAddress) {
+    var email = Email.from(emailAddress, emailValidator);
+    var randomPassword = generateRandomPassword();
+    return VerifiedMember.create(
+        idGenerator.getId(), email, createEncryptedPassword(randomPassword));
+  }
+
+  private String generateRandomPassword() {
+    return UUID.randomUUID().toString();
   }
 }
