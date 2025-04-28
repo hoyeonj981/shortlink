@@ -8,5 +8,9 @@ public interface MemberRepository {
 
   void save(VerifiedMember verifiedMember);
 
+  void save(UnverifiedMember unverifiedMember);
+
   Optional<Member> findByEmail(Email email);
+
+  boolean existsByEmail(Email email);
 }
