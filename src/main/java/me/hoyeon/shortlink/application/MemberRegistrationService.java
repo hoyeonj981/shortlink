@@ -8,13 +8,13 @@ public class MemberRegistrationService {
   private final MemberRepository memberRepository;
   private final MemberFactory memberFactory;
   private final MemberVerificationService memberVerificationService;
-  private final OAuthCredentialRepository oauthCredentialRepository;
+  private final OauthCredentialRepository oauthCredentialRepository;
 
   public MemberRegistrationService(
       MemberRepository memberRepository,
       MemberFactory memberFactory,
       MemberVerificationService memberVerificationService,
-      OAuthCredentialRepository oauthCredentialRepository
+      OauthCredentialRepository oauthCredentialRepository
   ) {
     this.memberRepository = memberRepository;
     this.memberFactory = memberFactory;
