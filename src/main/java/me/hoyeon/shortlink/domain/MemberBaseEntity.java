@@ -21,6 +21,8 @@ public abstract class MemberBaseEntity {
 
   protected boolean isDeleted = false;
 
+  private String memberType;
+
   @CreatedDate
   @Column(nullable = false, updatable = false)
   private LocalDateTime createdAt;
@@ -30,6 +32,10 @@ public abstract class MemberBaseEntity {
 
   public void delete() {
     this.isDeleted = true;
+  }
+
+  public String getMemberType() {
+    return memberType;
   }
 
   public boolean isDeleted() {
