@@ -35,7 +35,9 @@ public class UnverifiedMember extends MemberBaseEntity implements Member {
     return new UnverifiedMember(id, email, password, token);
   }
 
-  public UnverifiedMember(
+  protected UnverifiedMember() {}
+
+  private UnverifiedMember(
       Long memberId,
       Email email,
       EncryptedPassword password,

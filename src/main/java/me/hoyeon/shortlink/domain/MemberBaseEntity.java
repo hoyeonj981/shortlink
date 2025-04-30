@@ -28,8 +28,6 @@ public abstract class MemberBaseEntity {
   @LastModifiedDate
   private LocalDateTime updatedAt;
 
-  protected MemberBaseEntity() {}
-
   public void delete() {
     this.isDeleted = true;
   }

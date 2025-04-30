@@ -33,6 +33,8 @@ public class VerifiedMember extends MemberBaseEntity implements Member {
     );
   }
 
+  protected VerifiedMember() {}
+
   private VerifiedMember(
       Long memberId,
       Email email,
