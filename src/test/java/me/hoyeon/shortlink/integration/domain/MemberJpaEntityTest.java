@@ -124,6 +124,8 @@ public class MemberJpaEntityTest {
     var oldPassword = "old-password";
     var newPassword = "new-password";
     var encodedNewPassword = "encoded-new-password";
+    when(passwordEncoder.matches(eq(oldPassword), anyString())).thenReturn(true);
+    when(passwordEncoder.encode(eq(newPassword))).thenReturn(encodedNewPassword);
     var password = EncryptedPassword.create(oldPassword, passwordEncoder);
     var memberId = 1L;
     var verifiedMember = VerifiedMember.create(memberId, email, password);
@@ -131,8 +133,6 @@ public class MemberJpaEntityTest {
     entityManager.persist(verifiedMember);
     entityManager.flush();
 
-    when(passwordEncoder.matches(eq(oldPassword), anyString())).thenReturn(true);
-    when(passwordEncoder.encode(eq(newPassword))).thenReturn(encodedNewPassword);
     var updatedMember = verifiedMember.changePassword(oldPassword, newPassword, passwordEncoder);
 
     entityManager.detach(verifiedMember);
