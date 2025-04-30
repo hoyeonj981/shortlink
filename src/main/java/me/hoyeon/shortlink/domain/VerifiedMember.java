@@ -1,14 +1,28 @@
 package me.hoyeon.shortlink.domain;
 
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class VerifiedMember implements Member {
+@Entity
+@Table(name = "member")
+@DiscriminatorValue("verified")
+public class VerifiedMember extends MemberBaseEntity implements Member {
 
-  private final Long memberId;
-  private final Email email;
-  private final EncryptedPassword password;
-  private final LocalDateTime verifiedAt;
+  @Id
+  private Long memberId;
+
+  @Embedded
+  private Email email;
+
+  @Embedded
+  private EncryptedPassword password;
+
+  private LocalDateTime verifiedAt;
 
   public static VerifiedMember create(Long memberId, Email email, EncryptedPassword password) {
     return new VerifiedMember(

@@ -1,14 +1,19 @@
 package me.hoyeon.shortlink.domain;
 
-import java.util.Objects;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
+@Embeddable
 public class EncryptedPassword {
 
-  private final String hashedValue;
+  @Column(nullable = false, name = "encrypted_pwd")
+  private String hashedValue;
 
   public static EncryptedPassword create(String rawPassword, PasswordEncoder encoder) {
     return new EncryptedPassword(encoder.encode(rawPassword));
   }
+
+  protected EncryptedPassword() {}
 
   private EncryptedPassword(String hashedValue) {
     this.hashedValue = hashedValue;

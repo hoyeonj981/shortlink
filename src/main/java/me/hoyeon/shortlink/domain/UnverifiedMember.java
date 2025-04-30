@@ -1,13 +1,34 @@
 package me.hoyeon.shortlink.domain;
 
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.SecondaryTable;
+import jakarta.persistence.Table;
 import java.util.Objects;
 
-public class UnverifiedMember implements Member {
+@Entity
+@Table(name = "member")
+@SecondaryTable(
+    name = "verification_token",
+    pkJoinColumns = @PrimaryKeyJoinColumn(name = "member_id")
+)
+@DiscriminatorValue("unverified")
+public class UnverifiedMember extends MemberBaseEntity implements Member {
 
-  private final Long memberId;
-  private final Email email;
-  private final EncryptedPassword password;
-  private final VerificationToken token;
+  @Id
+  private Long memberId;
+
+  @Embedded
+  private Email email;
+
+  @Embedded
+  private EncryptedPassword password;
+
+  @Embedded
+  private VerificationToken token;
 
   public static UnverifiedMember create(Long id, Email email, EncryptedPassword password,
       VerificationToken token) {
