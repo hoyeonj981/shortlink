@@ -1,12 +1,16 @@
 package me.hoyeon.shortlink.domain;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import java.util.Objects;
 
+@Embeddable
 public class Email {
 
   private static final EmailValidator DEFAULT_VALIDATOR = new RegexEmailValidator();
 
-  private final String address;
+  @Column(nullable = false, name = "email_address")
+  private String address;
 
   public static Email of(String emailAddress) {
     return Email.from(emailAddress, DEFAULT_VALIDATOR);
@@ -16,6 +20,8 @@ public class Email {
     validator.validate(emailAddress);
     return new Email(emailAddress);
   }
+
+  protected Email() {}
 
   private Email(String address) {
     this.address = address.toLowerCase();
