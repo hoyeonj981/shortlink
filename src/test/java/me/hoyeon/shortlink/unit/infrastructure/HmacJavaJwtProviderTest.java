@@ -13,9 +13,12 @@ import static org.mockito.Mockito.when;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import me.hoyeon.shortlink.application.AuthenticationException;
 import me.hoyeon.shortlink.application.InvalidJwtTokenException;
 import me.hoyeon.shortlink.application.JwtTokenProvider;
@@ -171,5 +174,41 @@ class HmacJavaJwtProviderTest {
         .withIssuer(ISSUER)
         .withExpiresAt(expiresAt)
         .sign(algorithm);
+  }
+
+  @Test
+  @DisplayName("claims 맵 기반으로 access token을 발급하면 각 claim이 정상적으로 포함된다")
+  void generateAccessTokenWithClaimsTest() {
+    var claims = new HashMap<String, Object>();
+    claims.put("memberId", 1234L);
+    claims.put("username", "testUser");
+    claims.put("isAdmin", true);
+    claims.put("age", 27);
+
+    var token = jwtProvider.generateAccessToken(claims);
+    var decoded = JWT.decode(token);
+
+    assertThat(decoded.getIssuer()).isEqualTo(ISSUER);
+    assertThat(decoded.getClaim("memberId").asLong()).isEqualTo(1234L);
+    assertThat(decoded.getClaim("username").asString()).isEqualTo("testUser");
+    assertThat(decoded.getClaim("isAdmin").asBoolean()).isTrue();
+    assertThat(decoded.getClaim("age").asInt()).isEqualTo(27);
+    assertThat(decoded.getExpiresAt()).isNotNull();
+  }
+
+  @Test
+  @DisplayName("claims 맵 기반으로 refresh token을 발급하면 각 claim이 정상적으로 포함된다")
+  void generateRefreshTokenWithClaimsTest() {
+    var claims = new HashMap<String, Object>();
+    claims.put("memberId", 5678L);
+    claims.put("tokenType", "refresh");
+
+    var token = jwtProvider.generateRefreshToken(claims);
+    var decoded = JWT.decode(token);
+
+    assertThat(decoded.getIssuer()).isEqualTo(ISSUER);
+    assertThat(decoded.getClaim("memberId").asLong()).isEqualTo(5678L);
+    assertThat(decoded.getClaim("tokenType").asString()).isEqualTo("refresh");
+    assertThat(decoded.getExpiresAt()).isNotNull();
   }
 }

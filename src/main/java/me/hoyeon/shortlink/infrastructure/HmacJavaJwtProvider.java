@@ -6,6 +6,7 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.Map;
 import java.util.UUID;
 import me.hoyeon.shortlink.application.AuthenticationException;
 import me.hoyeon.shortlink.application.InvalidJwtTokenException;
@@ -44,6 +45,38 @@ public class HmacJavaJwtProvider implements JwtTokenProvider {
   }
 
   @Override
+  public String generateAccessToken(Map<String, ?> claims) {
+    try {
+      var algorithm = selectAlgorithm(jwtProperties.getAlgorithm());
+      var expiration = Instant.now(clock)
+          .plusSeconds(jwtProperties.getAccessExpiration());
+      var builder = JWT.create().withIssuer(jwtProperties.getIssuer());
+
+      for (Map.Entry<String, ?> entry : claims.entrySet()) {
+        var key = entry.getKey();
+        var value = entry.getValue();
+
+        if (value instanceof String) {
+          builder.withClaim(key, (String) value);
+        } else if (value instanceof Long) {
+          builder.withClaim(key, (Long) value);
+        } else if (value instanceof Integer) {
+          builder.withClaim(key, (Integer) value);
+        } else if (value instanceof Double) {
+          builder.withClaim(key, (Double) value);
+        } else if (value instanceof Boolean) {
+          builder.withClaim(key, (Boolean) value);
+        }
+      }
+
+      builder.withExpiresAt(expiration);
+      return builder.sign(algorithm);
+    } catch (JWTCreationException e) {
+      throw new AuthenticationException(e.getMessage(), e);
+    }
+  }
+
+  @Override
   public String generateRefreshToken(Long memberId) {
     try {
       var algorithm = selectAlgorithm(jwtProperties.getAlgorithm());
@@ -56,6 +89,37 @@ public class HmacJavaJwtProvider implements JwtTokenProvider {
           .withExpiresAt(expiration)
           .sign(algorithm);
     } catch (IllegalArgumentException | JWTCreationException e) {
+      throw new AuthenticationException(e.getMessage(), e);
+    }
+  }
+
+  @Override
+  public String generateRefreshToken(Map<String, ?> claims) {
+    try {
+      var algorithm = selectAlgorithm(jwtProperties.getAlgorithm());
+      var expiration = Instant.now(clock)
+          .plusSeconds(jwtProperties.getAccessExpiration());
+      var builder = JWT.create().withIssuer(jwtProperties.getIssuer());
+
+      for (Map.Entry<String, ?> entry : claims.entrySet()) {
+        var key = entry.getKey();
+        var value = entry.getValue();
+
+        if (value instanceof String) {
+          builder.withClaim(key, (String) value);
+        } else if (value instanceof Long) {
+          builder.withClaim(key, (Long) value);
+        } else if (value instanceof Integer) {
+          builder.withClaim(key, (Integer) value);
+        } else if (value instanceof Double) {
+          builder.withClaim(key, (Double) value);
+        } else if (value instanceof Boolean) {
+          builder.withClaim(key, (Boolean) value);
+        }
+      }
+      builder.withExpiresAt(expiration);
+      return builder.sign(algorithm);
+    } catch (JWTCreationException e) {
       throw new AuthenticationException(e.getMessage(), e);
     }
   }
