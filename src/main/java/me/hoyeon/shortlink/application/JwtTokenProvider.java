@@ -1,6 +1,5 @@
 package me.hoyeon.shortlink.application;
 
-import java.util.Map;
 import me.hoyeon.shortlink.domain.Member;
 
 public interface JwtTokenProvider {

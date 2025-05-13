@@ -197,6 +197,47 @@ class HmacJavaJwtProviderTest {
         .isInstanceOf(IllegalArgumentException.class);
   }
 
+  @DisplayName("유효한 리프레시 토큰으로 새로운 액세스 토큰을 발급한다")
+  @Test
+  void refreshAccessTokenWithValidRefreshToken() {
+    var memberId = 1L;
+    var member = mock(VerifiedMember.class);
+    when(member.getId()).thenReturn(memberId);
+    when(member.isVerified()).thenReturn(true);
+    when(memberQueryService.getMemberById(memberId)).thenReturn(member);
+
+    var refreshToken = jwtProvider.generateRefreshToken(member);
+    var newAccessToken = jwtProvider.refreshAccessToken(refreshToken);
+    var decoded = JWT.decode(newAccessToken);
+
+    assertThat(decoded.getIssuer()).isEqualTo(ISSUER);
+    assertThat(decoded.getClaim(MEMBER_ID.getClaimName()).asLong()).isEqualTo(memberId);
+    assertThat(decoded.getClaim(ROLE.getClaimName()).asString()).isEqualTo(VERIFIED.getValue());
+  }
+
+  @DisplayName("유효하지 않은 리프레시 토큰으로 액세스 토큰 발급 시 예외가 발생한다")
+  @Test
+  void throwExceptionWhenRefreshingWithInvalidRefreshToken() {
+    var invalidRefreshToken = "invalid-refresh-token";
+
+    assertThatThrownBy(() -> jwtProvider.refreshAccessToken(invalidRefreshToken))
+        .isInstanceOf(InvalidJwtTokenException.class);
+  }
+
+  @DisplayName("다른 발급자의 리프레시 토큰으로 액세스 토큰 발급 시 예외가 발생한다")
+  @Test
+  void throwExceptionWhenRefreshingWithDifferentIssuer() {
+    var tokenWithDifferentIssuer = JWT.create()
+        .withIssuer("different-issuer")
+        .withClaim(MEMBER_ID.getClaimName(), 1L)
+        .withClaim(TOKEN_TYPE.getClaimName(), "refresh")
+        .sign(Algorithm.HMAC256(MY_SECRET_KEY));
+
+    assertThatThrownBy(() -> jwtProvider.refreshAccessToken(tokenWithDifferentIssuer))
+        .isInstanceOf(InvalidJwtTokenException.class);
+  }
+
+
   @DisplayName("JWT가 블랙리스트에 없다면 블랙리스트에 추가한다")
   @Test
   void addJwtToBlackListIfItIsNotInBlackList() {
