@@ -34,8 +34,8 @@ public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
     var principal = (DefaultOAuth2User) authentication.getPrincipal();
     var email = (String) principal.getAttribute("email");
     var member = memberQueryService.getMemberByEmail(email);
-    var accessToken = jwtTokenProvider.generateAccessToken(member.getId());
-    var refreshToken = jwtTokenProvider.generateRefreshToken(member.getId());
+    var accessToken = jwtTokenProvider.generateAccessToken(member);
+    var refreshToken = jwtTokenProvider.generateRefreshToken(member);
     var  tokens = new HashMap<String, String>();
     tokens.put("accessToken", accessToken);
     tokens.put("refreshToken", refreshToken);

@@ -5,15 +5,7 @@ import me.hoyeon.shortlink.domain.Member;
 
 public interface JwtTokenProvider {
 
-  String generateAccessToken(Long memberId);
-
-  String generateAccessToken(Map<String, ?> claims);
-
   String generateAccessToken(Member member);
-
-  String generateRefreshToken(Long memberId);
-
-  String generateRefreshToken(Map<String, ?> claims);
 
   String generateRefreshToken(Member member);
 

@@ -21,10 +21,9 @@ import com.auth0.jwt.algorithms.Algorithm;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Date;
-import java.util.HashMap;
-import me.hoyeon.shortlink.application.AuthenticationException;
 import me.hoyeon.shortlink.application.InvalidJwtTokenException;
 import me.hoyeon.shortlink.application.JwtTokenProvider;
+import me.hoyeon.shortlink.application.MemberQueryService;
 import me.hoyeon.shortlink.domain.Member;
 import me.hoyeon.shortlink.domain.UnverifiedMember;
 import me.hoyeon.shortlink.domain.VerifiedMember;
@@ -48,6 +47,8 @@ class HmacJavaJwtProviderTest {
 
   private HmacJwtProperties jwtProperties;
 
+  private MemberQueryService memberQueryService;
+
   @BeforeEach
   void setUp() {
     jwtProperties = new HmacJwtProperties();
@@ -58,42 +59,87 @@ class HmacJavaJwtProviderTest {
     jwtProperties.setRefreshExpiration(7200000L);
 
     jwtRepository = mock(JwtRepository.class);
+    memberQueryService = mock(MemberQueryService.class);
     jwtProvider = new HmacJavaJwtProvider(
         jwtProperties,
         Clock.systemDefaultZone(),
-        jwtRepository);
+        jwtRepository,
+        memberQueryService);
   }
 
-  @DisplayName("유효한 엑세스 토큰을 생성한다")
+  @DisplayName("인증된 회원의 액세스 토큰을 생성한다")
   @Test
-  void generateValidAccessToken() {
+  void createAccessTokenForVerifiedMember() {
     var memberId = 1L;
+    var verifiedMember = mock(VerifiedMember.class);
+    when(verifiedMember.isVerified()).thenReturn(true);
+    when(verifiedMember.getId()).thenReturn(memberId);
 
-    var token = jwtProvider.generateAccessToken(memberId);
-    var decodedJwt = JWT.require(Algorithm.HMAC256(MY_SECRET_KEY))
-        .withIssuer(ISSUER)
-        .build()
-        .verify(token);
+    var token = jwtProvider.generateAccessToken(verifiedMember);
+    var decoded = JWT.decode(token);
 
-    assertThat(token).isNotNull();
-    assertThat(decodedJwt.getIssuer()).isEqualTo(ISSUER);
-    assertThat(decodedJwt.getClaim("memberId").asLong()).isEqualTo(memberId);
+    assertThat(decoded.getIssuer()).isEqualTo(ISSUER);
+    assertThat(decoded.getId()).isNotNull();
+    assertThat(decoded.getIssuedAt()).isNotNull();
+    assertThat(decoded.getExpiresAt()).isNotNull();
+    assertThat(decoded.getExpiresAt().after(decoded.getIssuedAt())).isTrue();
+    assertThat(decoded.getClaim(MEMBER_ID.getClaimName()).asLong()).isEqualTo(memberId);
+    assertThat(decoded.getClaim(ROLE.getClaimName()).asString()).isEqualTo(VERIFIED.getValue());
+  }
+
+  @DisplayName("미인증된 회원의 액세스 토큰을 생성한다")
+  @Test
+  void createAccessTokenForUnverifiedMember() {
+    var memberId = 1L;
+    var verifiedMember = mock(UnverifiedMember.class);
+    when(verifiedMember.isVerified()).thenReturn(false);
+    when(verifiedMember.getId()).thenReturn(memberId);
+
+    var token = jwtProvider.generateAccessToken(verifiedMember);
+    var decoded = JWT.decode(token);
+
+    assertThat(decoded.getIssuer()).isEqualTo(ISSUER);
+    assertThat(decoded.getId()).isNotNull();
+    assertThat(decoded.getIssuedAt()).isNotNull();
+    assertThat(decoded.getExpiresAt()).isNotNull();
+    assertThat(decoded.getExpiresAt().after(decoded.getIssuedAt())).isTrue();
+    assertThat(decoded.getClaim(MEMBER_ID.getClaimName()).asLong()).isEqualTo(memberId);
+    assertThat(decoded.getClaim(ROLE.getClaimName()).asString()).isEqualTo(UNVERIFIED.getValue());
+  }
+
+  @DisplayName("회원의 리프레시 토큰을 생성한다")
+  @Test
+  void createRefreshTokenForMember() {
+    var memberId = 1L;
+    var member = mock(Member.class);
+    when(member.getId()).thenReturn(memberId);
+
+    var token = jwtProvider.generateRefreshToken(member);
+    var decoded = JWT.decode(token);
+
+    assertThat(decoded.getIssuer()).isEqualTo(ISSUER);
+    assertThat(decoded.getId()).isNotNull();
+    assertThat(decoded.getIssuedAt()).isNotNull();
+    assertThat(decoded.getExpiresAt()).isNotNull();
+    assertThat(decoded.getClaim(MEMBER_ID.getClaimName()).asLong()).isEqualTo(memberId);
+    assertThat(decoded.getClaim(TOKEN_TYPE.getClaimName()).asString()).isEqualTo("refresh");
   }
 
   @DisplayName("액세스 토큰 생성 시 JWT 생성 실패할 경우 예외가 발생한다")
   @Test
   void throwAuthenticationExceptionIfJwtCreationFails() {
-    var memberId = 1L;
+    var member = mock(VerifiedMember.class);
     jwtProperties.setSecret(EMPTY_SECRET);
 
-    assertThatThrownBy(() -> jwtProvider.generateAccessToken(memberId))
+    assertThatThrownBy(() -> jwtProvider.generateAccessToken(member))
         .isInstanceOf(IllegalArgumentException.class);
   }
 
   @DisplayName("유효한 토큰을 검증한다")
   @Test
   void validateValidToken() {
-    var validToken = jwtProvider.generateAccessToken(1L);
+    var member = mock(VerifiedMember.class);
+    var validToken = jwtProvider.generateAccessToken(member);
 
     assertThatCode(() -> jwtProvider.validate(validToken))
         .doesNotThrowAnyException();
@@ -104,7 +150,7 @@ class HmacJavaJwtProviderTest {
   void throwExceptionForInvalidSignatureToken() {
     var tokenWithWrongSignature = JWT.create()
         .withIssuer(ISSUER)
-        .withClaim("memberId", 1L)
+        .withClaim(MEMBER_ID.getClaimName(), 1L)
         .sign(Algorithm.HMAC256("wrong-secret-key"));
 
     assertThatThrownBy(() -> jwtProvider.validate(tokenWithWrongSignature))
@@ -114,9 +160,10 @@ class HmacJavaJwtProviderTest {
   @DisplayName("만료된 토큰은 예외를 발생시킨다")
   @Test
   void throwExceptionForExpiredToken() {
+    var member = mock(VerifiedMember.class);
     jwtProperties.setAccessExpiration(-1L);
 
-    var expiredToken = jwtProvider.generateAccessToken(1L);
+    var expiredToken = jwtProvider.generateAccessToken(member);
 
     assertThatThrownBy(() -> jwtProvider.validate(expiredToken))
         .isInstanceOf(InvalidJwtTokenException.class);
@@ -126,8 +173,10 @@ class HmacJavaJwtProviderTest {
   @Test
   void createValidRefreshToken() {
     var memberId = 1L;
+    var member = mock(VerifiedMember.class);
+    when(member.getId()).thenReturn(memberId);
 
-    var refreshToken = jwtProvider.generateRefreshToken(memberId);
+    var refreshToken = jwtProvider.generateRefreshToken(member);
     var decodedJwt = JWT.require(Algorithm.HMAC256(MY_SECRET_KEY))
         .withIssuer(ISSUER)
         .build()
@@ -135,17 +184,17 @@ class HmacJavaJwtProviderTest {
 
     assertThat(refreshToken).isNotNull();
     assertThat(decodedJwt.getIssuer()).isEqualTo(ISSUER);
-    assertThat(decodedJwt.getClaim("memberId").asLong()).isEqualTo(memberId);
+    assertThat(decodedJwt.getClaim(MEMBER_ID.getClaimName()).asLong()).isEqualTo(memberId);
   }
 
   @DisplayName("리프레시 토큰 생성 시 JWT 생성에 실패할 경우 예외가 발생한다")
   @Test
   void throwAuthenticationExceptionIfJwtCreationFailsWhenCreatingRefreshToken() {
-    var memberId = 1L;
+    var member = mock(VerifiedMember.class);
     jwtProperties.setSecret(EMPTY_SECRET);
 
-    assertThatThrownBy(() -> jwtProvider.generateRefreshToken(memberId))
-        .isInstanceOf(AuthenticationException.class);
+    assertThatThrownBy(() -> jwtProvider.generateRefreshToken(member))
+        .isInstanceOf(IllegalArgumentException.class);
   }
 
   @DisplayName("JWT가 블랙리스트에 없다면 블랙리스트에 추가한다")
@@ -180,99 +229,5 @@ class HmacJavaJwtProviderTest {
         .withIssuer(ISSUER)
         .withExpiresAt(expiresAt)
         .sign(algorithm);
-  }
-
-  @Test
-  @DisplayName("claims 맵 기반으로 access token을 발급하면 각 claim이 정상적으로 포함된다")
-  void generateAccessTokenWithClaimsTest() {
-    var claims = new HashMap<String, Object>();
-    claims.put("memberId", 1234L);
-    claims.put("username", "testUser");
-    claims.put("isAdmin", true);
-    claims.put("age", 27);
-
-    var token = jwtProvider.generateAccessToken(claims);
-    var decoded = JWT.decode(token);
-
-    assertThat(decoded.getIssuer()).isEqualTo(ISSUER);
-    assertThat(decoded.getClaim("memberId").asLong()).isEqualTo(1234L);
-    assertThat(decoded.getClaim("username").asString()).isEqualTo("testUser");
-    assertThat(decoded.getClaim("isAdmin").asBoolean()).isTrue();
-    assertThat(decoded.getClaim("age").asInt()).isEqualTo(27);
-    assertThat(decoded.getExpiresAt()).isNotNull();
-  }
-
-  @Test
-  @DisplayName("claims 맵 기반으로 refresh token을 발급하면 각 claim이 정상적으로 포함된다")
-  void generateRefreshTokenWithClaimsTest() {
-    var claims = new HashMap<String, Object>();
-    claims.put("memberId", 5678L);
-    claims.put("tokenType", "refresh");
-
-    var token = jwtProvider.generateRefreshToken(claims);
-    var decoded = JWT.decode(token);
-
-    assertThat(decoded.getIssuer()).isEqualTo(ISSUER);
-    assertThat(decoded.getClaim("memberId").asLong()).isEqualTo(5678L);
-    assertThat(decoded.getClaim("tokenType").asString()).isEqualTo("refresh");
-    assertThat(decoded.getExpiresAt()).isNotNull();
-  }
-
-  @DisplayName("인증된 회원의 액세스 토큰을 생성한다")
-  @Test
-  void test1() {
-    var memberId = 1L;
-    var verifiedMember = mock(VerifiedMember.class);
-    when(verifiedMember.isVerified()).thenReturn(true);
-    when(verifiedMember.getId()).thenReturn(memberId);
-
-    var token = jwtProvider.generateAccessToken(verifiedMember);
-    var decoded = JWT.decode(token);
-
-    assertThat(decoded.getIssuer()).isEqualTo(ISSUER);
-    assertThat(decoded.getId()).isNotNull();
-    assertThat(decoded.getIssuedAt()).isNotNull();
-    assertThat(decoded.getExpiresAt()).isNotNull();
-    assertThat(decoded.getExpiresAt().after(decoded.getIssuedAt())).isTrue();
-    assertThat(decoded.getClaim(MEMBER_ID.getClaimName()).asLong()).isEqualTo(memberId);
-    assertThat(decoded.getClaim(ROLE.getClaimName()).asString()).isEqualTo(VERIFIED.getValue());
-  }
-
-  @DisplayName("미인증된 회원의 액세스 토큰을 생성한다")
-  @Test
-  void test2() {
-    var memberId = 1L;
-    var verifiedMember = mock(UnverifiedMember.class);
-    when(verifiedMember.isVerified()).thenReturn(false);
-    when(verifiedMember.getId()).thenReturn(memberId);
-
-    var token = jwtProvider.generateAccessToken(verifiedMember);
-    var decoded = JWT.decode(token);
-
-    assertThat(decoded.getIssuer()).isEqualTo(ISSUER);
-    assertThat(decoded.getId()).isNotNull();
-    assertThat(decoded.getIssuedAt()).isNotNull();
-    assertThat(decoded.getExpiresAt()).isNotNull();
-    assertThat(decoded.getExpiresAt().after(decoded.getIssuedAt())).isTrue();
-    assertThat(decoded.getClaim(MEMBER_ID.getClaimName()).asLong()).isEqualTo(memberId);
-    assertThat(decoded.getClaim(ROLE.getClaimName()).asString()).isEqualTo(UNVERIFIED.getValue());
-  }
-
-  @DisplayName("회원의 리프레시 토큰을 생성한다")
-  @Test
-  void test3() {
-    var memberId = 1L;
-    var member = mock(Member.class);
-    when(member.getId()).thenReturn(memberId);
-
-    var token = jwtProvider.generateRefreshToken(member);
-    var decoded = JWT.decode(token);
-
-    assertThat(decoded.getIssuer()).isEqualTo(ISSUER);
-    assertThat(decoded.getId()).isNotNull();
-    assertThat(decoded.getIssuedAt()).isNotNull();
-    assertThat(decoded.getExpiresAt()).isNotNull();
-    assertThat(decoded.getClaim(MEMBER_ID.getClaimName()).asLong()).isEqualTo(memberId);
-    assertThat(decoded.getClaim(TOKEN_TYPE.getClaimName()).asString()).isEqualTo("refresh");
   }
 }

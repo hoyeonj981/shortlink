@@ -61,8 +61,8 @@ class AuthenticationServiceTest {
     when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
     doNothing().when(emailValidator).validate(anyString());
     when(member.matchPassword(anyString(), eq(passwordEncoder))).thenReturn(true);
-    when(jwtTokenProvider.generateAccessToken(anyLong())).thenReturn(ACCESS_TOKEN);
-    when(jwtTokenProvider.generateRefreshToken(anyLong())).thenReturn(REFRESH_TOKEN);
+    when(jwtTokenProvider.generateAccessToken(any())).thenReturn(ACCESS_TOKEN);
+    when(jwtTokenProvider.generateRefreshToken(any())).thenReturn(REFRESH_TOKEN);
 
     var result = authenticationService.signIn(TEST_EMAIL, TEST_PASSWORD);
 
