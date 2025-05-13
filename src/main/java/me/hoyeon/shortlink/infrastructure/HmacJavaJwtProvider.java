@@ -1,5 +1,7 @@
 package me.hoyeon.shortlink.infrastructure;
 
+import static me.hoyeon.shortlink.infrastructure.JwtClaimKey.*;
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
@@ -11,8 +13,12 @@ import java.util.UUID;
 import me.hoyeon.shortlink.application.AuthenticationException;
 import me.hoyeon.shortlink.application.InvalidJwtTokenException;
 import me.hoyeon.shortlink.application.JwtTokenProvider;
+import me.hoyeon.shortlink.domain.Member;
+import me.hoyeon.shortlink.domain.MemberVerificationStatus;
 
 public class HmacJavaJwtProvider implements JwtTokenProvider {
+
+  private static final String REFRESH = "refresh";
 
   private final HmacJwtProperties jwtProperties;
   private final Clock clock;
@@ -77,6 +83,28 @@ public class HmacJavaJwtProvider implements JwtTokenProvider {
   }
 
   @Override
+  public String generateAccessToken(Member member) {
+    try {
+      var algorithm = selectAlgorithm(jwtProperties.getAlgorithm());
+      var now = Instant.now(clock);
+      var expiration = now.plusSeconds(jwtProperties.getAccessExpiration());
+      var tokenId = UUID.randomUUID().toString();
+      var memberId = member.getId();
+      var role = MemberVerificationStatus.of(member).getValue();
+      return JWT.create()
+          .withIssuer(jwtProperties.getIssuer())
+          .withJWTId(tokenId)
+          .withIssuedAt(now)
+          .withExpiresAt(expiration)
+          .withClaim(MEMBER_ID.getClaimName(), memberId)
+          .withClaim(ROLE.getClaimName(), role)
+          .sign(algorithm);
+    } catch (JWTCreationException e) {
+      throw new AuthenticationException(e.getMessage(), e);
+    }
+  }
+
+  @Override
   public String generateRefreshToken(Long memberId) {
     try {
       var algorithm = selectAlgorithm(jwtProperties.getAlgorithm());
@@ -125,9 +153,33 @@ public class HmacJavaJwtProvider implements JwtTokenProvider {
   }
 
   @Override
+  public String generateRefreshToken(Member member) {
+    try {
+      var algorithm = selectAlgorithm(jwtProperties.getAlgorithm());
+      var now = Instant.now(clock);
+      var expiration = now.plusSeconds(jwtProperties.getRefreshExpiration());
+      var tokenId = UUID.randomUUID().toString();
+      var memberId = member.getId();
+      return JWT.create()
+          .withIssuer(jwtProperties.getIssuer())
+          .withJWTId(tokenId)
+          .withIssuedAt(now)
+          .withExpiresAt(expiration)
+          .withClaim(MEMBER_ID.getClaimName(), memberId)
+          .withClaim(TOKEN_TYPE.getClaimName(), REFRESH)
+          .sign(algorithm);
+    } catch (JWTCreationException e) {
+      throw new AuthenticationException(e.getMessage(), e);
+    }
+  }
+
+
+  @Override
   public String refreshAccessToken(String refreshToken) throws InvalidJwtTokenException {
     validate(refreshToken);
-    var memberId = JWT.decode(refreshToken).getClaim("memberId").asLong();
+    var memberId = JWT.decode(refreshToken)
+        .getClaim(MEMBER_ID.getClaimName()).asLong();
+
     return generateAccessToken(memberId);
   }
 
