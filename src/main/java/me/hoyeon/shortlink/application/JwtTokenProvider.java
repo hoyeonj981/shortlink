@@ -13,4 +13,6 @@ public interface JwtTokenProvider {
   void invalidate(String token);
 
   void validate(String token) throws InvalidJwtTokenException;
+
+  String getClaim(String token, String key);
 }

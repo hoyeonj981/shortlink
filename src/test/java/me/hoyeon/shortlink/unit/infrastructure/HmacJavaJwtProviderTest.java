@@ -27,6 +27,7 @@ import me.hoyeon.shortlink.application.MemberQueryService;
 import me.hoyeon.shortlink.domain.Member;
 import me.hoyeon.shortlink.domain.UnverifiedMember;
 import me.hoyeon.shortlink.domain.VerifiedMember;
+import me.hoyeon.shortlink.infrastructure.ClaimNotExistException;
 import me.hoyeon.shortlink.infrastructure.HmacJavaJwtProvider;
 import me.hoyeon.shortlink.infrastructure.HmacJwtProperties;
 import me.hoyeon.shortlink.infrastructure.JwtRepository;
@@ -260,6 +261,39 @@ class HmacJavaJwtProviderTest {
 
     verify(jwtRepository).isBlackListed(givenToken);
     verify(jwtRepository, never()).addToBlackList(eq(givenToken), anyLong());
+  }
+
+  @DisplayName("토큰에서 유효한 클레임을 가져온다")
+  @Test
+  void getValidClaimFromToken() {
+    var memberId = 1L;
+    var member = mock(VerifiedMember.class);
+    when(member.getId()).thenReturn(memberId);
+    when(member.isVerified()).thenReturn(true);
+
+    var token = jwtProvider.generateAccessToken(member);
+    var claim = jwtProvider.getClaim(token, ROLE.getClaimName());
+
+    assertThat(claim).isEqualTo(VERIFIED.getValue());
+  }
+
+  @DisplayName("존재하지 않는 클레임 키로 조회시 예외가 발생한다")
+  @Test
+  void throwExceptionWhenClaimKeyNotExists() {
+    var member = mock(VerifiedMember.class);
+    var token = jwtProvider.generateAccessToken(member);
+
+    assertThatThrownBy(() -> jwtProvider.getClaim(token, "non-existing-key"))
+        .isInstanceOf(ClaimNotExistException.class);
+  }
+
+  @DisplayName("유효하지 않은 토큰으로 클레임 조회시 예외가 발생한다")
+  @Test
+  void throwExceptionWhenTokenIsInvalid() {
+    var invalidToken = "invalid-token";
+
+    assertThatThrownBy(() -> jwtProvider.getClaim(invalidToken, ROLE.getClaimName()))
+        .isInstanceOf(InvalidJwtTokenException.class);
   }
 
   private String createTestJwtToken(long expiresInSeconds) {

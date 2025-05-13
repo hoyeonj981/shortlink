@@ -11,6 +11,7 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 import me.hoyeon.shortlink.application.AuthenticationException;
 import me.hoyeon.shortlink.application.InvalidJwtTokenException;
@@ -109,6 +110,15 @@ public class HmacJavaJwtProvider implements JwtTokenProvider {
     } catch (IllegalArgumentException | JWTVerificationException e) {
       throw new InvalidJwtTokenException(e.getMessage(), e);
     }
+  }
+
+  @Override
+  public String getClaim(String token, String key) {
+    var claim = JWT.decode(token).getClaim(key);
+    if (claim.isMissing()) {
+      throw new ClaimNotExistException(key);
+    }
+    return claim.asString();
   }
 
   private Algorithm selectAlgorithm(String algorithm) {
