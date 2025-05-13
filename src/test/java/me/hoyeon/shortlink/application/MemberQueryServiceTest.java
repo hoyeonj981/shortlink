@@ -70,4 +70,28 @@ class MemberQueryServiceTest {
     assertThatThrownBy(() -> memberQueryService.getMemberByEmail(invalidEmail))
         .isInstanceOf(InvalidEmailException.class);
   }
+
+  @DisplayName("ID로 회원 조회 시 해당 회원이 있으면 성공적으로 회원을 반환한다")
+  @Test
+  void getMemberByIdSuccessfully() {
+    var memberId = 1L;
+    var member = mock(Member.class);
+    when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+
+    var result = memberQueryService.getMemberById(memberId);
+
+    assertThat(result).isEqualTo(member);
+    verify(memberRepository).findById(memberId);
+  }
+
+  @DisplayName("ID로 회원 조회 시 해당 회원이 없으면 예외가 발생한다")
+  @Test
+  void throwExceptionWhenMemberNotFoundDuringGetMemberById() {
+    var memberId = 1L;
+    when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+
+    assertThatThrownBy(() -> memberQueryService.getMemberById(memberId))
+        .isInstanceOf(MemberNotFoundException.class);
+    verify(memberRepository).findById(memberId);
+  }
 }
