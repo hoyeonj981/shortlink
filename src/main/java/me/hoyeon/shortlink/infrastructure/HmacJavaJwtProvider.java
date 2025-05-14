@@ -8,6 +8,7 @@ import static me.hoyeon.shortlink.infrastructure.JwtClaimKey.TOKEN_TYPE;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import java.time.Clock;
 import java.time.Instant;
@@ -114,11 +115,15 @@ public class HmacJavaJwtProvider implements JwtTokenProvider {
 
   @Override
   public String getClaim(String token, String key) {
-    var claim = JWT.decode(token).getClaim(key);
-    if (claim.isMissing()) {
-      throw new ClaimNotExistException(key);
+    try {
+      var claim = JWT.decode(token).getClaim(key);
+      if (claim.isMissing()) {
+        throw new ClaimNotExistException(key);
+      }
+      return claim.asString();
+    } catch (JWTDecodeException e) {
+      throw new InvalidJwtTokenException(e.getMessage(), e);
     }
-    return claim.asString();
   }
 
   private Algorithm selectAlgorithm(String algorithm) {
