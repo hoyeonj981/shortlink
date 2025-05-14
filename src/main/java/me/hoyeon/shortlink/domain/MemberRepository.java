@@ -4,6 +4,8 @@ import java.util.Optional;
 
 public interface MemberRepository {
 
+  Optional<Member> findById(Long memberId);
+
   Optional<UnverifiedMember> findUnverifiedById(Long memberId);
 
   void save(VerifiedMember verifiedMember);

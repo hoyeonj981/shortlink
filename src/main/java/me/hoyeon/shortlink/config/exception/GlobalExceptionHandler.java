@@ -2,9 +2,12 @@ package me.hoyeon.shortlink.config.exception;
 
 import me.hoyeon.shortlink.application.ApplicationException;
 import me.hoyeon.shortlink.application.DuplicateUrlException;
+import me.hoyeon.shortlink.application.MemberNotFoundException;
+import me.hoyeon.shortlink.application.MismatchPasswordException;
 import me.hoyeon.shortlink.application.NotAccessibleUrlException;
 import me.hoyeon.shortlink.application.UrlNotFoundException;
 import me.hoyeon.shortlink.domain.DomainException;
+import me.hoyeon.shortlink.infrastructure.config.NotSupportedProviderException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -53,5 +56,17 @@ public class GlobalExceptionHandler {
   ) {
     return ResponseEntity.status(HttpStatus.GONE)
         .body(new ErrorResponse("NOT_ACCSIBLE_URL", e.getMessage()));
+  }
+
+  @ExceptionHandler({MemberNotFoundException.class, MismatchPasswordException.class})
+  public ResponseEntity<ErrorResponse> handleMemberNotFoundException(ApplicationException e) {
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        .body(new ErrorResponse("MEMBER_NOT_FOUND", e.getMessage()));
+  }
+
+  @ExceptionHandler(NotSupportedProviderException.class)
+  public ResponseEntity<ErrorResponse> handleNotSupportedProvider(NotSupportedProviderException e) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        .body(new ErrorResponse("NOT_SUPPORTED_PROVIDER", e.getMessage()));
   }
 }

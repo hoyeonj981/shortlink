@@ -47,8 +47,9 @@ sonar {
 		property(
 			"sonar.coverage.exclusions",
 					"**/me/hoyeon/shortlink/*Application.java," +
-					"**/me/hoyeon/shortlink/infrastructure/*Properties.java," +
-					"**/*Exception.java"
+					"**/me/hoyeon/shortlink/infrastructure/security/**," +
+					"**/*Exception.java," +
+					"**/*Properties.java"
 		)
 	}
 }

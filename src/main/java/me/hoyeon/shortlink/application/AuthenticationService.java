@@ -33,8 +33,8 @@ public class AuthenticationService {
         throw new MismatchPasswordException();
       }
       return new SignInResponse(
-          jwtTokenProvider.generateAccessToken(member.getId()),
-          jwtTokenProvider.generateRefreshToken(member.getId())
+          jwtTokenProvider.generateAccessToken(member),
+          jwtTokenProvider.generateRefreshToken(member)
       );
     } catch (InvalidEmailException e) {
       throw new AuthenticationException(e.getMessage(), e);
