@@ -1,8 +1,8 @@
 package me.hoyeon.shortlink.integration.ui;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -85,7 +85,7 @@ public class AuthControllerSecurityTest extends TestBeanConfiguration {
 
     @DisplayName("POST /api/v1/auth/login - 비밀번호가 공백일 경우 400를 반환한다")
     @Test
-    void return400IfPasswordIsBlank() throws Exception{
+    void return400IfPasswordIsBlank() throws Exception {
       var request = new SignInRequest(EMAIL, null);
 
       mockMvc.perform(post("/api/v1/auth/login"))
