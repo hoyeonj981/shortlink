@@ -5,8 +5,10 @@ import static me.hoyeon.shortlink.infrastructure.JwtClaimKey.ROLE;
 
 import java.util.Collection;
 import java.util.Collections;
+import me.hoyeon.shortlink.application.ApplicationException;
 import me.hoyeon.shortlink.application.JwtTokenProvider;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,11 +24,15 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
   @Override
   public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-    var token = (String) authentication.getCredentials();
-    jwtTokenProvider.validate(token);
-    var memberId = jwtTokenProvider.getClaim(token, MEMBER_ID.getClaimName());
-    var role = jwtTokenProvider.getClaim(token, ROLE.getClaimName());
-    return new JwtAuthenticationToken(memberId, token, createAuthority(role));
+    try {
+      var token = (String) authentication.getCredentials();
+      jwtTokenProvider.validate(token);
+      var memberId = jwtTokenProvider.getClaim(token, MEMBER_ID.getClaimName());
+      var role = jwtTokenProvider.getClaim(token, ROLE.getClaimName());
+      return new JwtAuthenticationToken(memberId, token, createAuthority(role));
+    } catch (ApplicationException e) {
+      throw new BadCredentialsException(e.getMessage(), e);
+    }
   }
 
   @Override
