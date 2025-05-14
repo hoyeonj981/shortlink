@@ -18,7 +18,7 @@ public class OauthProperties {
 
   public String getOauthAuthorizeUrl(String provider) {
     if (!isEnabled(provider)) {
-      throw new IllegalArgumentException("Not Supported Provider");
+      throw new NotSupportedProviderException(provider);
     }
     return SPRING_SECURITY_OAUTH2_DEFAULT_URL + provider;
   }
