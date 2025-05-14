@@ -1,4 +1,4 @@
-package me.hoyeon.shortlink.infrastructure;
+package me.hoyeon.shortlink.infrastructure.config;
 
 public class RetryProperties {
 

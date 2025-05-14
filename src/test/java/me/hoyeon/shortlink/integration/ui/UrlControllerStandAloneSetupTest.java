@@ -16,7 +16,7 @@ import me.hoyeon.shortlink.application.NotAccessibleUrlException;
 import me.hoyeon.shortlink.application.ShortenedResult;
 import me.hoyeon.shortlink.application.UrlNotFoundException;
 import me.hoyeon.shortlink.application.UrlShortenerService;
-import me.hoyeon.shortlink.config.exception.GlobalExceptionHandler;
+import me.hoyeon.shortlink.infrastructure.config.GlobalExceptionHandler;
 import me.hoyeon.shortlink.ui.CreateShortUrlRequest;
 import me.hoyeon.shortlink.ui.UrlController;
 import org.junit.jupiter.api.BeforeEach;

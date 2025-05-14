@@ -29,7 +29,7 @@ import me.hoyeon.shortlink.domain.UnverifiedMember;
 import me.hoyeon.shortlink.domain.VerifiedMember;
 import me.hoyeon.shortlink.infrastructure.ClaimNotExistException;
 import me.hoyeon.shortlink.infrastructure.HmacJavaJwtProvider;
-import me.hoyeon.shortlink.infrastructure.HmacJwtProperties;
+import me.hoyeon.shortlink.infrastructure.config.HmacJwtProperties;
 import me.hoyeon.shortlink.infrastructure.JwtRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
