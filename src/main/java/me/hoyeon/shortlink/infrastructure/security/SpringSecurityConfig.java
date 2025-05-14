@@ -6,15 +6,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-//@EnableWebSecurity
+@EnableWebSecurity
 public class SpringSecurityConfig {
 
   private final MemberQueryService memberQueryService;
@@ -43,10 +47,10 @@ public class SpringSecurityConfig {
             .successHandler(oauth2SuccessHandler())
             .failureHandler(oauth2FailureHandler()));
 
-    http.addFilterBefore(
-        jwtAuthenticationFilter(authenticationManager(http, jwtAuthenticationProvider())),
-        UsernamePasswordAuthenticationFilter.class
-    );
+    http.authenticationProvider(jwtAuthenticationProvider())
+        .addFilterBefore(
+            jwtAuthenticationFilter(http.getSharedObject(AuthenticationManager.class)),
+            UsernamePasswordAuthenticationFilter.class);
 
     // h2 console
     http.headers(headers -> headers
@@ -54,6 +58,14 @@ public class SpringSecurityConfig {
 
     return http.build();
   }
+
+  @Bean
+  public AuthenticationManager authenticationManager(
+      AuthenticationConfiguration authenticationConfiguration
+  ) throws Exception {
+    return authenticationConfiguration.getAuthenticationManager();
+  }
+
 
   @Bean
   public JwtAuthenticationProvider jwtAuthenticationProvider() {
@@ -83,12 +95,7 @@ public class SpringSecurityConfig {
   }
 
   @Bean
-  public AuthenticationManager authenticationManager(
-      HttpSecurity http,
-      JwtAuthenticationProvider jwtAuthenticationProvider
-  ) throws Exception {
-    return http.getSharedObject(AuthenticationManagerBuilder.class)
-        .authenticationProvider(jwtAuthenticationProvider)
-        .build();
+  public PasswordEncoder securityPasswordEncoder() {
+    return new BCryptPasswordEncoder();
   }
 }
