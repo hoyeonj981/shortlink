@@ -72,7 +72,7 @@ class GoogleUrlSafetyServiceTest {
         .setResponseCode(400)
         .setBody("{\"error\":\"bad request\"}"));
 
-     var urls = List.of(new OriginalUrl("https://example.com"));
+    var urls = List.of(new OriginalUrl("https://example.com"));
 
     assertThatThrownBy(() -> googleUrlSafetyService.assess(urls))
         .isInstanceOf(ExternalApiException.class);
@@ -85,7 +85,7 @@ class GoogleUrlSafetyServiceTest {
         .setResponseCode(500)
         .setBody("{\"error\":\"server error\"}"));
 
-     var urls = List.of(new OriginalUrl("https://example.com"));
+    var urls = List.of(new OriginalUrl("https://example.com"));
 
     assertThatThrownBy(() -> googleUrlSafetyService.assess(urls))
         .isInstanceOf(ExternalApiException.class);
