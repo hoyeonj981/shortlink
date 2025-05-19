@@ -1,4 +1,4 @@
-package me.hoyeon.shortlink.application;
+package me.hoyeon.shortlink.integration.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
