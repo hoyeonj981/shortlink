@@ -6,6 +6,8 @@ import me.hoyeon.shortlink.application.EmailSendException;
 import me.hoyeon.shortlink.application.EmailSender;
 import me.hoyeon.shortlink.domain.EmailValidator;
 import me.hoyeon.shortlink.domain.InvalidEmailException;
+import me.hoyeon.shortlink.infrastructure.config.EmailProperties;
+import me.hoyeon.shortlink.infrastructure.config.RetryProperties;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSendException;

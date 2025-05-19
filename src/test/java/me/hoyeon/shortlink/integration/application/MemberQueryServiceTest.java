@@ -1,4 +1,4 @@
-package me.hoyeon.shortlink.application;
+package me.hoyeon.shortlink.integration.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -8,6 +8,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
+import me.hoyeon.shortlink.application.MemberNotFoundException;
+import me.hoyeon.shortlink.application.MemberQueryService;
 import me.hoyeon.shortlink.domain.Email;
 import me.hoyeon.shortlink.domain.EmailValidator;
 import me.hoyeon.shortlink.domain.InvalidEmailException;

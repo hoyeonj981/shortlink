@@ -12,13 +12,13 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import java.time.Clock;
 import java.time.Instant;
-import java.util.Objects;
 import java.util.UUID;
 import me.hoyeon.shortlink.application.AuthenticationException;
 import me.hoyeon.shortlink.application.InvalidJwtTokenException;
 import me.hoyeon.shortlink.application.JwtTokenProvider;
 import me.hoyeon.shortlink.application.MemberQueryService;
 import me.hoyeon.shortlink.domain.Member;
+import me.hoyeon.shortlink.infrastructure.config.HmacJwtProperties;
 
 public class HmacJavaJwtProvider implements JwtTokenProvider {
 

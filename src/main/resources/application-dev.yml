@@ -27,3 +27,21 @@ spring:
               - openid
               - profile
               - email
+
+google:
+  safe-browsing:
+    client:
+      client-id: shortlink
+      client-version: 0.1
+    endpoint: ${GOOGLE_SAFE_BROWSING_URL}
+    api-key: ${GOOGLE_SAFE_BROWSING_API_KEY}
+    timeout: 3000
+    threat-types:
+      - MALWARE
+      - SOCIAL_ENGINEERING
+      - UNWANTED_SOFTWARE
+      - POTENTIALLY_HARMFUL_APPLICATION
+    platform-types:
+      - ANY_PLATFORM
+    threat-entry-types:
+      - URL
