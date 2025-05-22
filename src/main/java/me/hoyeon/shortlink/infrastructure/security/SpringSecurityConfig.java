@@ -2,10 +2,10 @@ package me.hoyeon.shortlink.infrastructure.security;
 
 import me.hoyeon.shortlink.application.JwtTokenProvider;
 import me.hoyeon.shortlink.application.MemberQueryService;
+import me.hoyeon.shortlink.application.MemberRegistrationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,13 +22,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SpringSecurityConfig {
 
   private final MemberQueryService memberQueryService;
+  private final MemberRegistrationService memberRegistrationService;
   private final JwtTokenProvider jwtTokenProvider;
 
   public SpringSecurityConfig(
       MemberQueryService memberQueryService,
+      MemberRegistrationService memberRegistrationService,
       JwtTokenProvider jwtTokenProvider
   ) {
     this.memberQueryService = memberQueryService;
+    this.memberRegistrationService = memberRegistrationService;
     this.jwtTokenProvider = jwtTokenProvider;
   }
 
@@ -81,7 +84,7 @@ public class SpringSecurityConfig {
 
   @Bean
   public Oauth2MemberService oauth2MemberService() {
-    return new Oauth2MemberService(memberQueryService);
+    return new Oauth2MemberService(memberQueryService, memberRegistrationService);
   }
 
   @Bean
