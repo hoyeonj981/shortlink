@@ -1,6 +1,7 @@
 package me.hoyeon.shortlink.application;
 
 import me.hoyeon.shortlink.domain.Email;
+import me.hoyeon.shortlink.domain.Member;
 import me.hoyeon.shortlink.domain.MemberRepository;
 
 public class MemberRegistrationService {
@@ -22,22 +23,24 @@ public class MemberRegistrationService {
     this.oauthCredentialRepository = oauthCredentialRepository;
   }
 
-  public void registerWithEmail(String emailAddress, String rawPassword) {
+  public Member registerWithEmail(String emailAddress, String rawPassword) {
     var email = Email.of(emailAddress);
     validateMemberExists(email);
 
     var unverifiedMember = memberFactory.createNew(emailAddress, rawPassword);
     memberRepository.save(unverifiedMember);
     memberVerificationService.sendVerificationMail(unverifiedMember.getId());
+    return unverifiedMember;
   }
 
-  public void registerWithOauth(OauthInfo info) {
+  public Member registerWithOauth(OauthInfo info) {
     var email = Email.of(info.email());
     validateMemberExists(email);
 
     var verifiedMember = memberFactory.createNewWithOauth(info.email());
     memberRepository.save(verifiedMember);
     oauthCredentialRepository.save(verifiedMember.getId(), info.email(), info.provider());
+    return verifiedMember;
   }
 
   private void validateMemberExists(Email email) {
