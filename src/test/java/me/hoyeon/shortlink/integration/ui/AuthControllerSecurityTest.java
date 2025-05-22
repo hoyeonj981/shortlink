@@ -1,5 +1,6 @@
 package me.hoyeon.shortlink.integration.ui;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -7,13 +8,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import me.hoyeon.shortlink.application.MemberAlreadyExists;
 import me.hoyeon.shortlink.application.MemberNotFoundException;
 import me.hoyeon.shortlink.application.MismatchPasswordException;
 import me.hoyeon.shortlink.application.SignInResponse;
+import me.hoyeon.shortlink.domain.Email;
+import me.hoyeon.shortlink.domain.UnverifiedMember;
 import me.hoyeon.shortlink.infrastructure.config.NotSupportedProviderException;
 import me.hoyeon.shortlink.infrastructure.security.SpringSecurityConfig;
 import me.hoyeon.shortlink.ui.AuthController;
 import me.hoyeon.shortlink.ui.SignInRequest;
+import me.hoyeon.shortlink.ui.SignUpRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -117,6 +122,75 @@ public class AuthControllerSecurityTest extends TestBeanConfiguration {
           .thenThrow(NotSupportedProviderException.class);
 
       mockMvc.perform(get("/api/v1/auth/login/oauth2/{provider}", provider))
+          .andExpect(status().isBadRequest());
+    }
+  }
+  
+  @DisplayName("이메일 기반 회원가입")
+  @Nested
+  class EmailBasedRegistrationTest {
+
+    @DisplayName("POST /api/v1/auth/signup - 정상 회원가입 후 201을 반환한다")
+    @Test
+    void registerSuccessfullyAndReturn201() throws Exception {
+      var mockMember = mock(UnverifiedMember.class);
+      var givenId = 1L;
+      when(memberRegistrationService.registerWithEmail(EMAIL, PASSWORD)).thenReturn(mockMember);
+      when(mockMember.getId()).thenReturn(givenId);
+      when(mockMember.getEmail()).thenReturn(Email.of(EMAIL));
+      var request = new SignUpRequest(EMAIL, PASSWORD);
+
+      mockMvc.perform(post("/api/v1/auth/signup")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(objectMapper.writeValueAsString(request)))
+          .andExpect(status().isCreated())
+          .andExpect(jsonPath("$.id").value(givenId))
+          .andExpect(jsonPath("$.email").value(EMAIL));
+    }
+
+    @DisplayName("POST /api/v1/auth/signup - 중복된 이메일로 가입시 400을 반환한다")
+    @Test
+    void return400IfEmailAlreadyExists() throws Exception {
+      var request = new SignUpRequest(EMAIL, PASSWORD);
+      when(memberRegistrationService.registerWithEmail(EMAIL, PASSWORD))
+          .thenThrow(MemberAlreadyExists.class);
+
+      mockMvc.perform(post("/api/v1/auth/signup")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(objectMapper.writeValueAsString(request)))
+          .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("POST /api/v1/auth/signup - 이메일 형식이 올바르지 않으면 400을 반환한다")
+    @Test
+    void return400IfEmailFormatIsInvalid() throws Exception {
+      var request = new SignUpRequest("invalid-email", PASSWORD);
+
+      mockMvc.perform(post("/api/v1/auth/signup")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(objectMapper.writeValueAsString(request)))
+          .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("POST /api/v1/auth/signup - 이메일이 공백일 경우 400을 반환한다")
+    @Test
+    void return400IfEmailIsBlank() throws Exception {
+      var request = new SignUpRequest(null, PASSWORD);
+
+      mockMvc.perform(post("/api/v1/auth/signup")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(objectMapper.writeValueAsString(request)))
+          .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("POST /api/v1/auth/signup - 비밀번호가 공백일 경우 400을 반환한다")
+    @Test
+    void return400IfPasswordIsBlank() throws Exception {
+      var request = new SignUpRequest(EMAIL, null);
+
+      mockMvc.perform(post("/api/v1/auth/signup")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(objectMapper.writeValueAsString(request)))
           .andExpect(status().isBadRequest());
     }
   }

@@ -1,5 +1,6 @@
 package me.hoyeon.shortlink.ui;
 
+import jakarta.validation.Valid;
 import me.hoyeon.shortlink.application.AuthenticationService;
 import me.hoyeon.shortlink.application.MemberRegistrationService;
 import me.hoyeon.shortlink.application.SignInResponse;
@@ -32,13 +33,13 @@ public class AuthController {
   }
 
   @PostMapping("/login")
-  public ResponseEntity<SignInResponse> login(@RequestBody SignInRequest request) {
+  public ResponseEntity<SignInResponse> login(@RequestBody @Valid SignInRequest request) {
     var signInResponse = authenticationService.signIn(request.email(), request.rawPassword());
     return ResponseEntity.ok(signInResponse);
   }
 
   @PostMapping("/signup")
-  public ResponseEntity<MemberResponse> signUp(@RequestBody SignUpRequest request) {
+  public ResponseEntity<MemberResponse> signUp(@RequestBody @Valid SignUpRequest request) {
     var member = memberRegistrationService.registerWithEmail(
         request.email(), request.rawPassword());
     var memberResponse = new MemberResponse(member.getId(), member.getEmail().getAddress());
