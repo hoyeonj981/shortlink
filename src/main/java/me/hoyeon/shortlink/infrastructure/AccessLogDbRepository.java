@@ -1,6 +1,6 @@
 package me.hoyeon.shortlink.infrastructure;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import me.hoyeon.shortlink.application.AccessLogReader;
 import me.hoyeon.shortlink.application.AccessLogWriter;
@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 public class AccessLogDbRepository implements AccessLogWriter, AccessLogReader {
+
+  private static final String DATE = "date";
 
   private final AccessLogJpaRepository jpaRepository;
 
@@ -26,17 +28,18 @@ public class AccessLogDbRepository implements AccessLogWriter, AccessLogReader {
 
   @Override
   public List<DailyStatisticDto> findDailyStatByAlias(
-      String urlAlias, LocalDateTime from, LocalDateTime to
+      String urlAlias, LocalDate from, LocalDate to, int page, int limit
   ) {
-    return List.of();
+    Pageable pageable = PageRequest.of(page, limit, Sort.by(DATE).ascending());
+    return jpaRepository.findDailyStatByAlias(urlAlias, from, to, pageable);
   }
 
   @Override
   public List<CountryStatisticDto> findCountryStatByAlias(
-      String urlAlias, LocalDateTime from, LocalDateTime to, int limit
+      String urlAlias, LocalDate from, LocalDate to, int page, int limit
   ) {
-    Pageable pageable = PageRequest.of(0, limit, Sort.by("date").ascending());
-    return List.of();
+    Pageable pageable = PageRequest.of(page, limit, Sort.by(DATE).ascending());
+    return jpaRepository.findCountryStatByAlias(urlAlias, from, to, pageable);
   }
 
   @Override

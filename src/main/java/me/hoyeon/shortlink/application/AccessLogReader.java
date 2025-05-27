@@ -1,6 +1,6 @@
 package me.hoyeon.shortlink.application;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface AccessLogReader {
@@ -8,8 +8,8 @@ public interface AccessLogReader {
   long getTotalCount(String alias);
 
   List<DailyStatisticDto> findDailyStatByAlias(
-      String urlAlias, LocalDateTime from, LocalDateTime to);
+      String urlAlias, LocalDate from, LocalDate to, int page, int limit);
 
   List<CountryStatisticDto> findCountryStatByAlias(
-      String urlAlias, LocalDateTime from, LocalDateTime to, int limit);
+      String urlAlias, LocalDate from, LocalDate to, int page, int limit);
 }

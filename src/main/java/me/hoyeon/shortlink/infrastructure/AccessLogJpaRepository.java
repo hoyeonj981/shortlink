@@ -1,6 +1,6 @@
 package me.hoyeon.shortlink.infrastructure;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import me.hoyeon.shortlink.application.CountryStatisticDto;
 import me.hoyeon.shortlink.application.DailyStatisticDto;
@@ -15,19 +15,29 @@ public interface AccessLogJpaRepository extends JpaRepository<AccessLog, Long> {
 
   Long countByAlias(String alias);
 
-  @Query("")
+  @Query("SELECT new me.hoyeon.shortlink.application.DailyStatisticDto("
+      + "DATE(a.redirectedAt), COUNT(a)) "
+      + "FROM AccessLog a "
+      + "WHERE a.alias = :alias AND a.redirectedAt BETWEEN :from AND :to "
+      + "GROUP BY DATE(a.redirectedAt) "
+      + "ORDER BY DATE(a.redirectedAt) ASC")
   List<DailyStatisticDto> findDailyStatByAlias(
       @Param("alias") String alias,
-      @Param("from") LocalDateTime from,
-      @Param("to") LocalDateTime to
+      @Param("from") LocalDate from,
+      @Param("to") LocalDate to,
+      Pageable pageable
   );
 
-  @Query("")
+  @Query("SELECT new me.hoyeon.shortlink.application.CountryStatisticDto("
+      + "a.country, COUNT(a)) "
+      + "FROM AccessLog a "
+      + "WHERE a.alias = :alias AND a.redirectedAt BETWEEN :from AND :to "
+      + "GROUP BY a.country "
+      + "ORDER BY COUNT(a) DESC")
   List<CountryStatisticDto> findCountryStatByAlias(
       @Param("alias") String alias,
-      @Param("from") LocalDateTime from,
-      @Param("to") LocalDateTime to,
-      int limit,
+      @Param("from") LocalDate from,
+      @Param("to") LocalDate to,
       Pageable pageable
   );
 }

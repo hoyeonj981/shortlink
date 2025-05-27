@@ -1,8 +1,10 @@
 package me.hoyeon.shortlink.application;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
+import org.springframework.stereotype.Service;
 
+@Service
 public class StatisticsService {
 
   private final AccessLogReader accessLogReader;
@@ -16,14 +18,14 @@ public class StatisticsService {
   }
 
   public List<DailyStatisticDto> getDailyStatistics(
-      String urlAlias, LocalDateTime from, LocalDateTime to
+      String urlAlias, LocalDate from, LocalDate to, int page, int limit
   ) {
-    return accessLogReader.findDailyStatByAlias(urlAlias, from, to);
+    return accessLogReader.findDailyStatByAlias(urlAlias, from, to, page, limit);
   }
 
   public List<CountryStatisticDto> getCountryStatistics(
-      String urlAlias, LocalDateTime from, LocalDateTime to, int limit
+      String urlAlias, LocalDate from, LocalDate to, int page, int limit
   ) {
-    return accessLogReader.findCountryStatByAlias(urlAlias, from, to, limit);
+    return accessLogReader.findCountryStatByAlias(urlAlias, from, to, page, limit);
   }
 }
