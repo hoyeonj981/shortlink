@@ -123,10 +123,11 @@ class AccessLogDbRepositoryTest {
           "http://referer.com",
           day.atStartOfDay()
       );
-      if (i % 2 == 0)
+      if (i % 2 == 0) {
         when(ipGeoLocationProvider.extractCountry(anyString())).thenReturn("KR");
-      else
+      } else {
         when(ipGeoLocationProvider.extractCountry(anyString())).thenReturn("US");
+      }
       accessLogDbRepository.write(redirectInfo);
     }
 
