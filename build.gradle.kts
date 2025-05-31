@@ -49,7 +49,8 @@ sonar {
 					"**/me/hoyeon/shortlink/*Application.java," +
 					"**/me/hoyeon/shortlink/infrastructure/security/**," +
 					"**/*Exception.java," +
-					"**/*Properties.java"
+					"**/*Properties.java, " +
+					"**/Q*.java"
 		)
 	}
 }
@@ -111,6 +112,7 @@ tasks.asciidoctor {
 }
 
 tasks.withType<Checkstyle>().configureEach {
+	exclude("**/Q*.java")
 	reports {
 		xml.required.set(true)
 		html.required.set(true)
