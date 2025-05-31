@@ -16,9 +16,14 @@ public class AccessLogDbRepository implements AccessLogWriter, AccessLogReader {
   private static final String DATE = "date";
 
   private final AccessLogJpaRepository jpaRepository;
+  private final IpGeoLocationProvider ipGeoLocationProvider;
 
-  public AccessLogDbRepository(AccessLogJpaRepository jpaRepository) {
+  public AccessLogDbRepository(
+      AccessLogJpaRepository jpaRepository,
+      IpGeoLocationProvider ipGeoLocationProvider
+  ) {
     this.jpaRepository = jpaRepository;
+    this.ipGeoLocationProvider = ipGeoLocationProvider;
   }
 
   @Override
@@ -49,6 +54,7 @@ public class AccessLogDbRepository implements AccessLogWriter, AccessLogReader {
     accessLog.setOriginalUrl(info.originalUrl());
     accessLog.setUserAgent(info.userAgent());
     accessLog.setIp(info.ip());
+    accessLog.setCountry(ipGeoLocationProvider.extractCountry(info.ip()));
     accessLog.setReferer(info.referer());
     accessLog.setRedirectedAt(info.redirectedAt());
     jpaRepository.save(accessLog);
