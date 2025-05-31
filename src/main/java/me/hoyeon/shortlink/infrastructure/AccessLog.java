@@ -23,6 +23,7 @@ public class AccessLog {
   private String userAgent;
   private String ip;
   private String referer;
+  private String country;
   private LocalDateTime redirectedAt;
 
   public Long getId() {
@@ -71,6 +72,14 @@ public class AccessLog {
 
   public void setReferer(String referer) {
     this.referer = referer;
+  }
+
+  public String getCountry() {
+    return country;
+  }
+
+  public void setCountry(String country) {
+    this.country = country;
   }
 
   public LocalDateTime getRedirectedAt() {
