@@ -49,8 +49,15 @@ sonar {
 					"**/me/hoyeon/shortlink/*Application.java," +
 					"**/me/hoyeon/shortlink/infrastructure/security/**," +
 					"**/*Exception.java," +
-					"**/*Properties.java"
+					"**/*Properties.java, " +
+					"**/Q*.java"
 		)
+	}
+}
+
+sourceSets {
+	main {
+		java.srcDirs("src/main/java", "build/generated/sources/annotationProcessor/java/main")
 	}
 }
 
@@ -83,6 +90,11 @@ dependencies {
 	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+	implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
+	annotationProcessor("com.querydsl:querydsl-apt:5.0.0:jakarta")
+	annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+	annotationProcessor("jakarta.annotation:jakarta.annotation-api")
 }
 
 tasks.withType<Test> {
@@ -100,6 +112,7 @@ tasks.asciidoctor {
 }
 
 tasks.withType<Checkstyle>().configureEach {
+	exclude("**/Q*.java")
 	reports {
 		xml.required.set(true)
 		html.required.set(true)

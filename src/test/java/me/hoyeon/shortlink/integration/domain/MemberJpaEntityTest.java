@@ -16,6 +16,7 @@ import me.hoyeon.shortlink.domain.PasswordEncoder;
 import me.hoyeon.shortlink.domain.UnverifiedMember;
 import me.hoyeon.shortlink.domain.VerificationToken;
 import me.hoyeon.shortlink.domain.VerifiedMember;
+import me.hoyeon.shortlink.infrastructure.config.SpringBeansConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
 @DataJpaTest
-@Import({JpaTestConfig.class})
+@Import({JpaTestConfig.class, SpringBeansConfig.class})
 public class MemberJpaEntityTest {
 
   private static final Clock FIXED_CLOCK = Clock.fixed(

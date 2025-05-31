@@ -20,4 +20,6 @@ public record RedirectInfo(
   ) {
     this(alias, originalUrl, ip, userAgent, referer, LocalDateTime.now());
   }
+
+  public RedirectInfo {}
 }

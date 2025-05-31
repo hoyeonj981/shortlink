@@ -6,6 +6,7 @@ import java.time.Clock;
 import java.time.Instant;
 import me.hoyeon.shortlink.infrastructure.BlackListedTokenJpaRepository;
 import me.hoyeon.shortlink.infrastructure.DbJwtRepository;
+import me.hoyeon.shortlink.infrastructure.config.SpringBeansConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 @DataJpaTest
-@Import(TestConfig.class)
+@Import({TestConfig.class, SpringBeansConfig.class})
 public class DbJwtRepositoryTest {
 
   @Autowired
