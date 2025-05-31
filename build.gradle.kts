@@ -54,6 +54,12 @@ sonar {
 	}
 }
 
+sourceSets {
+	main {
+		java.srcDirs("src/main/java", "build/generated/sources/annotationProcessor/java/main")
+	}
+}
+
 configurations {
 	compileOnly {
 		extendsFrom(configurations.annotationProcessor.get())
@@ -83,6 +89,11 @@ dependencies {
 	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+	implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
+	annotationProcessor("com.querydsl:querydsl-apt:5.0.0:jakarta")
+	annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+	annotationProcessor("jakarta.annotation:jakarta.annotation-api")
 }
 
 tasks.withType<Test> {
