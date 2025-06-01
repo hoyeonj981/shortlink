@@ -95,6 +95,8 @@ dependencies {
 	annotationProcessor("com.querydsl:querydsl-apt:5.0.0:jakarta")
 	annotationProcessor("jakarta.persistence:jakarta.persistence-api")
 	annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+
+	implementation("com.maxmind.geoip2:geoip2:4.3.1")
 }
 
 tasks.withType<Test> {
