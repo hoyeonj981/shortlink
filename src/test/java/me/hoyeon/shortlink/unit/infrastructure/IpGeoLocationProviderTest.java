@@ -34,7 +34,7 @@ class IpGeoLocationProviderTest {
 
   @DisplayName("주어진 IP 정보에서 국가의 ISO 코드를 추출한다")
   @Test
-  void extractISOFromGivenIp() throws Exception {
+  void extractIsoFromGivenIp() throws Exception {
     var cityResponse = mock(CityResponse.class);
     var country = mock(Country.class);
     when(databaseProvider.city(any())).thenReturn(cityResponse);
@@ -79,7 +79,7 @@ class IpGeoLocationProviderTest {
 
   @DisplayName("IO 에러 시 예외가 발생한다")
   @Test
-  void throwExceptionWhenIOErrorHasBeenHappened() throws Exception {
+  void throwExceptionWhenIoErrorHasBeenHappened() throws Exception {
     when(databaseProvider.city(any())).thenThrow(IOException.class);
 
     assertThatThrownBy(() -> ipGeoLocationProvider.extractCountry(TEST_IP))
