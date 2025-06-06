@@ -45,3 +45,7 @@ google:
       - ANY_PLATFORM
     threat-entry-types:
       - URL
+
+maxMind:
+  geoLite2:
+    databasePath: ${MAX_MIND_DATABASE_PATH}
