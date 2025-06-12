@@ -1,11 +1,11 @@
 plugins {
 	java
 	checkstyle
-	id("org.springframework.boot") version "3.4.1"
-	id("io.spring.dependency-management") version "1.1.7"
-	id("org.asciidoctor.jvm.convert") version "3.3.2"
-	id("jacoco")
-	id("org.sonarqube") version "6.0.1.5171"
+	jacoco
+	alias(libs.plugins.spring.boot)
+	alias(libs.plugins.spring.dependency.management)
+	alias(libs.plugins.asciidoctor.jvm)
+	alias(libs.plugins.sonarqube)
 }
 
 group = "me.hoyeon"
@@ -74,29 +74,36 @@ repositories {
 extra["snippetsDir"] = file("build/generated-snippets")
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.springframework.boot:spring-boot-starter-security")
-	implementation("org.springframework.boot:spring-boot-starter-validation")
-	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.springframework.boot:spring-boot-starter-mail")
-	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-	implementation("com.auth0:java-jwt:4.5.0")
-	compileOnly("org.projectlombok:lombok")
-	developmentOnly("org.springframework.boot:spring-boot-devtools")
-	runtimeOnly("com.h2database:h2")
-	annotationProcessor("org.projectlombok:lombok")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
-	testImplementation("org.springframework.security:spring-security-test")
-	testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	// spring boot
+	implementation(libs.spring.boot.starter.data.jpa)
+	implementation(libs.spring.boot.starter.security)
+	implementation(libs.spring.boot.starter.validation)
+	implementation(libs.spring.boot.starter.web)
+	implementation(libs.spring.boot.starter.mail)
+	implementation(libs.spring.boot.starter.oauth2.client)
+	developmentOnly(libs.spring.boot.devtools)
 
+	// db
+	runtimeOnly(libs.h2)
+
+	// test
+	testImplementation(libs.spring.boot.starter.test)
+	testImplementation(libs.spring.restdocs.mockmvc)
+	testImplementation(libs.spring.security.test)
+	testImplementation(libs.mockwebserver)
+	testRuntimeOnly(libs.junit.platform.launcher)
+
+	// queryDsl
 	implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
 	annotationProcessor("com.querydsl:querydsl-apt:5.0.0:jakarta")
-	annotationProcessor("jakarta.persistence:jakarta.persistence-api")
-	annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+	annotationProcessor(libs.jakarta.persistence.api)
+	annotationProcessor(libs.jakarta.annotation.api)
 
-	implementation("com.maxmind.geoip2:geoip2:4.3.1")
+	// external libs
+	implementation(libs.java.jwt)
+	implementation(libs.geoip2)
+	compileOnly(libs.lombok)
+	annotationProcessor(libs.lombok)
 }
 
 tasks.withType<Test> {
