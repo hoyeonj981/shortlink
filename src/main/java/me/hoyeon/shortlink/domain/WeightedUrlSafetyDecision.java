@@ -15,6 +15,17 @@ public class WeightedUrlSafetyDecision implements UrlSafetyDecisionPolicy {
 
   @Override
   public SafetyDecision decide(UrlSafetyContext context) {
-    return null;
+    var score = assessor.assess(context);
+    var weighted = score.technical() * weights.technicalWeight()
+        + score.content() * weights.contentWeight()
+        + score.behavior() * weights.behaviorWeight();
+
+    if (weighted >= thresholds.blockThreshold()) {
+      return SafetyDecision.block(weighted, score, "block");
+    }
+    if (weighted >= thresholds.warnThreshold()) {
+      return SafetyDecision.warn(weighted, score, "warn");
+    }
+    return SafetyDecision.allow(weighted, score, "allow");
   }
 }
