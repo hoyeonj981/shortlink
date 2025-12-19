@@ -8,4 +8,4 @@ import java.util.Map;
  */
 public record BehaviorRisk(
     Map<BehaviorRiskCategory, RiskLevel> factors
-) { }
+) {}

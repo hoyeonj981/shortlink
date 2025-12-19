@@ -4,4 +4,4 @@ public record UrlRiskScore(
     double technical,
     double content,
     double behavior
-) { }
+) {}

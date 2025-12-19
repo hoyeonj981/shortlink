@@ -8,4 +8,4 @@ import java.util.Map;
  */
 public record TechnicalRisk(
     Map<TechnicalRiskCategory, RiskLevel> factors
-) { }
+) {}

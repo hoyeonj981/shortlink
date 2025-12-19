@@ -8,4 +8,4 @@ import java.util.Map;
  */
 public record ContentRisk(
     Map<ContentRiskCategory, RiskLevel> factors
-) { }
+) {}
