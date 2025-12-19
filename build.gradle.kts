@@ -55,11 +55,7 @@ sonar {
 	}
 }
 
-sourceSets {
-	main {
-		java.srcDirs("src/main/java", "build/generated/sources/annotationProcessor/java/main")
-	}
-}
+
 
 configurations {
 	compileOnly {
