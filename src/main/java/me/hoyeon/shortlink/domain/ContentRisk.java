@@ -1,14 +1,11 @@
 package me.hoyeon.shortlink.domain;
 
-import java.util.Set;
+import java.util.Map;
 
-public class ContentRisk {
-
-  private final Set<ContentRiskCategory> categories;
-  private final double nsfwScore;
-
-  public ContentRisk(Set<ContentRiskCategory> categories, double nsfwScore) {
-    this.categories = categories;
-    this.nsfwScore = nsfwScore;
-  }
-}
+/*
+* URL 컨텐츠 위험 요소
+* 예시 : 도박, 폭력, 성인물 등
+ */
+public record ContentRisk(
+    Map<ContentRiskCategory, RiskLevel> factors
+) { }

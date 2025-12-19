@@ -1,9 +1,10 @@
 package me.hoyeon.shortlink.domain;
 
 public enum RiskLevel {
-  NONE,
+  NEGLIGIBLE,
   LOW,
   MEDIUM,
   HIGH,
+  CRITICL,
   ;
 }
