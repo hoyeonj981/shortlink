@@ -50,7 +50,11 @@ sonar {
 					"**/me/hoyeon/shortlink/infrastructure/security/**," +
 					"**/*Exception.java," +
 					"**/*Properties.java, " +
-					"**/Q*.java"
+					"**/Q*.java" +
+                    "**/*Risk.java" +
+                    "**/*Category.java" +
+                    "**/RiskLevel.java" +
+                    "**/SafetyDecision.java"
 		)
 	}
 }
