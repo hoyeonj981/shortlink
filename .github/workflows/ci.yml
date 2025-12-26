@@ -49,7 +49,7 @@ jobs:
         run: ./gradlew build -x checkstyleMain -x checkstyleTest
 
       # SonarCloud 분석
-      - name: SonarCloud Scan
+      - name: Official SonarQube Scan
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
