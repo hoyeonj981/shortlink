@@ -50,16 +50,19 @@ sonar {
 					"**/me/hoyeon/shortlink/infrastructure/security/**," +
 					"**/*Exception.java," +
 					"**/*Properties.java, " +
-					"**/Q*.java"
+					"**/Q*.java" +
+                    "**/*Risk.java" +
+                    "**/*Category.java" +
+                    "**/RiskLevel.java" +
+                    "**/SafetyDecision.java" +
+                    "**/ActorInfo.java" +
+                    "**/UrlSafetyContext.java" +
+                    "**/SafetyDecision.java"
 		)
 	}
 }
 
-sourceSets {
-	main {
-		java.srcDirs("src/main/java", "build/generated/sources/annotationProcessor/java/main")
-	}
-}
+
 
 configurations {
 	compileOnly {
