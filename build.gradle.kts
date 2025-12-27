@@ -54,6 +54,9 @@ sonar {
                     "**/*Risk.java" +
                     "**/*Category.java" +
                     "**/RiskLevel.java" +
+                    "**/SafetyDecision.java" +
+                    "**/ActorInfo.java" +
+                    "**/UrlSafetyContext.java" +
                     "**/SafetyDecision.java"
 		)
 	}
