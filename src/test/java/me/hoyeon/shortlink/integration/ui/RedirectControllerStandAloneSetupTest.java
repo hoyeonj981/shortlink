@@ -1,12 +1,15 @@
 package me.hoyeon.shortlink.integration.ui;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import me.hoyeon.shortlink.application.NotAccessibleUrlException;
+import me.hoyeon.shortlink.application.RedirectLoggingService;
 import me.hoyeon.shortlink.application.UrlNotFoundException;
 import me.hoyeon.shortlink.application.UrlShortenerService;
 import me.hoyeon.shortlink.infrastructure.config.GlobalExceptionHandler;
@@ -24,10 +27,14 @@ public class RedirectControllerStandAloneSetupTest {
 
   private UrlShortenerService urlShortenerService;
 
+  private RedirectLoggingService redirectLoggingService;
+
   @BeforeEach
   void setUp() {
     urlShortenerService = mock(UrlShortenerService.class);
-    mockMvc = MockMvcBuilders.standaloneSetup(new RedirectController(urlShortenerService))
+    redirectLoggingService = mock(RedirectLoggingService.class);
+    mockMvc = MockMvcBuilders.standaloneSetup(
+          new RedirectController(urlShortenerService, redirectLoggingService))
         .setControllerAdvice(new GlobalExceptionHandler())
         .build();
   }
@@ -46,6 +53,8 @@ public class RedirectControllerStandAloneSetupTest {
       mockMvc.perform(get("/{alias}", alias))
           .andExpect(status().is3xxRedirection())
           .andExpect(redirectedUrl(originalUrl));
+
+      verify(redirectLoggingService).log(any());
     }
   }
 
