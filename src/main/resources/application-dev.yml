@@ -27,6 +27,7 @@ spring:
               - openid
               - profile
               - email
+  forward-headers-strategy: none
 
 google:
   safe-browsing:
