@@ -29,7 +29,7 @@ public class IpGeoLocationProvider {
       var response = geoLite2DatabaseProvider.city(ipAddress);
       return response.getCountry().getIsoCode();
     } catch (GeoIp2Exception | UnknownHostException e) {
-      throw new RuntimeException("지역 정보를 추출할 수 없습니다. " + host, e);
+      return "N/A";
     } catch (IOException e) {
       throw new RuntimeException("IO 예외 발생", e);
     }

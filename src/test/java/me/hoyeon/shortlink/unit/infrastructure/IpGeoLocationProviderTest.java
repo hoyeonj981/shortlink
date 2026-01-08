@@ -53,8 +53,9 @@ class IpGeoLocationProviderTest {
     var ipAddress = InetAddress.getByName(privateIp);
     when(databaseProvider.city(ipAddress)).thenThrow(GeoIp2Exception.class);
 
-    assertThatThrownBy(() -> ipGeoLocationProvider.extractCountry(privateIp))
-        .isInstanceOf(RuntimeException.class);
+    var result = ipGeoLocationProvider.extractCountry(privateIp);
+
+    assertThat(result).isEqualTo("N/A");
   }
 
   @DisplayName("주어진 IP가 reserved IP인 경우 예외가 발생핸다")
@@ -64,8 +65,9 @@ class IpGeoLocationProviderTest {
     var ipAddress = InetAddress.getByName(reservedIp);
     when(databaseProvider.city(ipAddress)).thenThrow(GeoIp2Exception.class);
 
-    assertThatThrownBy(() -> ipGeoLocationProvider.extractCountry(reservedIp))
-        .isInstanceOf(RuntimeException.class);
+    var result = ipGeoLocationProvider.extractCountry(reservedIp);
+
+    assertThat(result).isEqualTo("N/A");
   }
 
   @DisplayName("주어진 IP가 IPv4 형식이 아닐 경우 예외가 발생한다")
