@@ -88,12 +88,16 @@ dependencies {
 
 	// db
 	runtimeOnly(libs.h2)
+	runtimeOnly(libs.mysql.connector.j)
 
 	// test
 	testImplementation(libs.spring.boot.starter.test)
 	testImplementation(libs.spring.restdocs.mockmvc)
 	testImplementation(libs.spring.security.test)
 	testImplementation(libs.mockwebserver)
+	testImplementation(libs.spring.boot.testcontainers)
+	testImplementation(libs.testcontainers.junit.jupiter)
+	testImplementation(libs.testcontainers.mysql)
 	testRuntimeOnly(libs.junit.platform.launcher)
 
 	// queryDsl
