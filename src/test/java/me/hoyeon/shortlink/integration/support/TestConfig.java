@@ -1,4 +1,4 @@
-package me.hoyeon.shortlink.integration.infrastructure;
+package me.hoyeon.shortlink.integration.support;
 
 import java.time.Clock;
 import java.time.Instant;

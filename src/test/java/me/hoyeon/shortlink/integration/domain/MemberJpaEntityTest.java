@@ -16,6 +16,7 @@ import me.hoyeon.shortlink.domain.PasswordEncoder;
 import me.hoyeon.shortlink.domain.UnverifiedMember;
 import me.hoyeon.shortlink.domain.VerificationToken;
 import me.hoyeon.shortlink.domain.VerifiedMember;
+import me.hoyeon.shortlink.integration.support.JpaTestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

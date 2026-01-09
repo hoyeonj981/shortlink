@@ -10,7 +10,7 @@ import me.hoyeon.shortlink.application.RedirectInfo;
 import me.hoyeon.shortlink.infrastructure.AccessLogDbRepository;
 import me.hoyeon.shortlink.infrastructure.AccessLogJpaRepository;
 import me.hoyeon.shortlink.infrastructure.IpGeoLocationProvider;
-import me.hoyeon.shortlink.integration.domain.JpaTestConfig;
+import me.hoyeon.shortlink.integration.support.JpaTestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
