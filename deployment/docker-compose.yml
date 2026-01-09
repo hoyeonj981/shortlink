@@ -1,0 +1,52 @@
+services:
+  shortlink-service:
+    build:
+      context: ../
+      dockerfile: deployment/Dockerfile
+    container_name: shortlink-app
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - DB_URL=jdbc:mysql://db:3306/shortlink?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_SAFE_BROWSING_API_KEY=${GOOGLE_SAFE_BROWSING_API_KEY}
+      - MAX_MIND_DATABASE_PATH=/app/geoip/GeoLite2-City.mmdb
+      - BASE_URL=http://localhost:8080
+    volumes:
+      - ../geoip/GeoLite2-City.mmdb:/app/geoip/GeoLite2-City.mmdb
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - shortlink-net
+
+  db:
+    image: mysql:8.0
+    container_name: shortlink-db
+    environment:
+      - MYSQL_DATABASE=shortlink
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - shortlink-net
+
+networks:
+  shortlink-net:
+    driver: bridge
+
+volumes:
+  mysql_data:
