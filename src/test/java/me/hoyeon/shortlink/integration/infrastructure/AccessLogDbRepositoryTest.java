@@ -11,6 +11,7 @@ import me.hoyeon.shortlink.infrastructure.AccessLogDbRepository;
 import me.hoyeon.shortlink.infrastructure.AccessLogJpaRepository;
 import me.hoyeon.shortlink.infrastructure.IpGeoLocationProvider;
 import me.hoyeon.shortlink.integration.support.JpaTestConfig;
+import me.hoyeon.shortlink.integration.support.TestContainerConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 @DataJpaTest
-@Import(JpaTestConfig.class)
+@Import({JpaTestConfig.class, TestContainerConfig.class})
 class AccessLogDbRepositoryTest {
 
   @Autowired
