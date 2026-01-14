@@ -1,4 +1,4 @@
-package me.hoyeon.shortlink.integration.domain;
+package me.hoyeon.shortlink.integration.support;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
